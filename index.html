@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Space Empire — Galactic Dominion</title>
+<style>
+:root{
+  --bg:#050711;--panel:#0b1020e8;--panel2:#10182be8;--line:#253250;
+  --text:#e9f1ff;--muted:#8ea0c2;--cyan:#4de7ff;--blue:#5d8dff;
+  --green:#55e6a5;--gold:#ffd166;--red:#ff667f;--purple:#b58cff;
+}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#14234a 0,#050711 42%,#02030a 100%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;color:var(--text);border:1px solid var(--line);background:#10182a;border-radius:9px;padding:9px 12px}button:hover{border-color:#5470a7;background:#16223a}button.primary{background:linear-gradient(135deg,#245b91,#19406b);border-color:#397ab5}.danger{color:#ff9aaa}.good{color:#6af0b5}.gold{color:#ffd166}
+#app{display:grid;grid-template-columns:235px 1fr;grid-template-rows:70px 1fr;min-height:100vh}
+header{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#070b16ed;border-bottom:1px solid var(--line);backdrop-filter:blur(12px);position:sticky;top:0;z-index:5}
+.logo{font-weight:900;letter-spacing:1px;font-size:20px}.logo span{color:var(--cyan)}
+.topstats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.res{padding:7px 10px;border:1px solid var(--line);background:#0b1120;border-radius:9px;font-size:13px}.res b{color:#fff}
+aside{border-right:1px solid var(--line);background:#070b16; padding:15px 12px}.navtitle{color:#63769a;font-size:11px;text-transform:uppercase;margin:10px 8px}.nav{display:flex;flex-direction:column;gap:6px}.nav button{width:100%;text-align:left;background:transparent;border-color:transparent}.nav button.active{background:#122039;border-color:#263d62;color:var(--cyan)}
+main{padding:18px;overflow:auto}.view{display:none}.view.active{display:block}.title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.title h1{margin:0;font-size:23px}.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;gap:12px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:linear-gradient(145deg,#0c1324e8,#080d19e8);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 12px 35px #0005}.card h3{margin:0 0 8px;font-size:15px}.big{font-size:25px;font-weight:800}.small{font-size:12px;color:var(--muted)}
+.progress{height:7px;background:#080c15;border-radius:99px;overflow:hidden;margin:9px 0}.bar{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:99px}
+#galaxy{height:540px;position:relative;overflow:hidden;background:#02040b;border:1px solid var(--line);border-radius:14px}
+canvas{display:block;width:100%;height:100%}.mapui{position:absolute;left:12px;top:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none}.mapui>*{pointer-events:auto}
+.floating{background:#080d19dd;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid #1c2740}th{color:#8092b6;font-size:11px;text-transform:uppercase}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #1b2740}.item:last-child{border:0}.actions{display:flex;gap:7px;flex-wrap:wrap}.tag{padding:4px 7px;border-radius:6px;background:#16213a;color:#a9bce0;font-size:11px}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.show{display:flex}.modalbox{width:min(650px,100%);max-height:90vh;overflow:auto;background:#09101f;border:1px solid #31466f;border-radius:14px;padding:18px}.modalhead{display:flex;justify-content:space-between;align-items:center}
+.log{max-height:240px;overflow:auto}.log div{padding:8px;border-bottom:1px solid #18233a;font-size:12px}
+@media(max-width:850px){#app{grid-template-columns:1fr;grid-template-rows:64px auto 1fr}header{grid-column:1;position:relative}.topstats{max-width:65%;overflow:hidden}aside{grid-row:2;border-right:0;border-bottom:1px solid var(--line);padding:7px;overflow-x:auto}.nav{flex-direction:row}.navtitle{display:none}.nav button{white-space:nowrap;width:auto}main{grid-row:3;padding:11px}.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}#galaxy{height:420px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="logo">🚀 SPACE <span>EMPIRE</span></div>
+  <div class="topstats" id="resources"></div>
+</header>
+<aside>
+  <div class="navtitle">Command</div>
+  <div class="nav">
+    <button class="active" data-view="dashboard">🌌 Galaxy</button>
+    <button data-view="planet">🪐 Planet</button>
+    <button data-view="build">🏭 Construction</button>
+    <button data-view="research">🔬 Research</button>
+    <button data-view="fleet">🚀 Fleet</button>
+    <button data-view="colonies">🌍 Colonies</button>
+    <button data-view="market">📦 Market</button>
+    <button data-view="battle">⚔️ Battle</button>
+  </div>
+  <div class="navtitle">System</div>
+  <div class="nav">
+    <button onclick="openSave()">💾 Save / Load</button>
+    <button onclick="resetGame()">♻️ New Empire</button>
+  </div>
+</aside>
+<main>
+<section id="dashboard" class="view active">
+  <div class="title"><div><h1>Galactic Command</h1><div class="muted">Explore the sector, expand your empire and dominate the stars.</div></div><button class="primary" onclick="scanGalaxy()">📡 Scan Sector</button></div>
+  <div class="grid g4" id="dashStats"></div>
+  <div id="galaxy">
+    <canvas id="space"></canvas>
+    <div class="mapui"><div class="floating">SECTOR 01 · <span class="good">ONLINE</span></div><div class="floating" id="coord">X:— Y:—</div></div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><h3>📜 Command Log</h3><div class="log" id="log"></div></div>
+    <div class="card"><h3>⚡ Empire Status</h3><div id="status"></div></div>
+  </div>
+</section>
+
+<section id="planet" class="view">
+ <div class="title"><div><h1>🪐 Nova Prime</h1><div class="muted">Your capital world · Population <span id="pop"></span></div></div><span class="tag">HOMEWORLD</span></div>
+ <div class="grid g4" id="planetStats"></div>
+ <div class="grid g2" style="margin-top:12px"><div class="card"><h3>Planet Development</h3><div id="planetBuildings"></div></div><div class="card"><h3>Planetary Queue</h3><div id="queue"></div></div></div>
+</section>
+
+<section id="build" class="view">
+ <div class="title"><div><h1>🏭 Construction</h1><div class="muted">Build infrastructure on Nova Prime.</div></div></div>
+ <div class="grid g3" id="buildList"></div>
+</section>
+
+<section id="research" class="view">
+ <div class="title"><div><h1>🔬 Research Lab</h1><div class="muted">Unlock technologies that permanently improve your empire.</div></div></div>
+ <div class="grid g3" id="researchList"></div>
+</section>
+
+<section id="fleet" class="view">
+ <div class="title"><div><h1>🚀 Fleet Command</h1><div class="muted">Build ships and prepare expeditions.</div></div><button onclick="buildShip('scout')">Build Scout</button></div>
+ <div class="grid g3" id="fleetList"></div>
+</section>
+
+<section id="colonies" class="view">
+ <div class="title"><div><h1>🌍 Colonies</h1><div class="muted">Planets discovered and controlled by your empire.</div></div><button class="primary" onclick="colonizeSelected()">🪐 Colonize Selected</button></div>
+ <div class="grid g3" id="colonyList"></div>
+</section>
+
+<section id="market" class="view">
+ <div class="title"><div><h1>📦 Galactic Market</h1><div class="muted">Exchange resources at dynamic rates.</div></div></div>
+ <div class="card"><table><thead><tr><th>Resource</th><th>Price</th><th>Your stock</th><th>Trade</th></tr></thead><tbody id="marketTable"></tbody></table></div>
+</section>
+
+<section id="battle" class="view">
+ <div class="title"><div><h1>⚔️ Combat Simulator</h1><div class="muted">Select a target and send your fleet into battle.</div></div></div>
+ <div class="grid g2"><div class="card"><h3>Enemy Signals</h3><div id="enemies"></div></div><div class="card"><h3>Battle Report</h3><div class="log" id="battleLog"></div></div></div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="modal"><div class="modalbox" id="modalbox"></div></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>Math.floor(n).toLocaleString();
+const clone=o=>JSON.parse(JSON.stringify(o));
+const initial={
+ res:{metal:1200,crystal:650,energy:500,credits:3000},
+ pop:12000, score:0, turn:1, selected:null,
+ buildings:{mine:1,crystal:1,reactor:1,shipyard:1,research:1},
+ fleet:{scout:2,fighter:4,cruiser:0,carrier:0},
+ research:{mining:0,reactor:0,propulsion:0,weapons:0,colonization:0},
+ colonies:[{name:"Nova Prime",type:"Capital",pop:12000,level:1}],
+ discovered:[],
+ logs:["Command initialized. Welcome, Emperor.","Nova Prime is stable. Production systems online."],
+ battleLogs:[],
+ queue:[]
+};
+let G=clone(initial);
+let market={metal:4,crystal:7,energy:5};
+const buildData=[
+ {id:"mine",icon:"⛏️",name:"Metal Mine",base:{metal:180,crystal:80},desc:"+ metal production"},
+ {id:"crystal",icon:"💎",name:"Crystal Mine",base:{metal:220,crystal:130},desc:"+ crystal production"},
+ {id:"reactor",icon:"⚡",name:"Fusion Reactor",base:{metal:250,crystal:180},desc:"+ energy production"},
+ {id:"shipyard",icon:"🏗️",name:"Shipyard",base:{metal:400,crystal:250},desc:"Unlocks stronger ships"},
+ {id:"research",icon:"🔬",name:"Research Lab",base:{metal:300,crystal:300},desc:"+ research speed"}
+];
+const researchData=[
+ {id:"mining",name:"Advanced Mining",icon:"⛏️",cost:{metal:300,crystal:200},desc:"+15% metal income per level",max:5},
+ {id:"reactor",name:"Quantum Reactors",icon:"⚡",cost:{metal:250,crystal:300},desc:"+20% energy income per level",max:5},
+ {id:"propulsion",name:"Warp Propulsion",icon:"🌀",cost:{metal:450,crystal:400},desc:"Enables deep-space expeditions",max:5},
+ {id:"weapons",name:"Plasma Weapons",icon:"🔫",cost:{metal:500,crystal:450},desc:"+25% fleet power per level",max:5},
+ {id:"colonization",name:"Colony Protocols",icon:"🌍",cost:{metal:600,crystal:550},desc:"Reduces colonization cost",max:5}
+];
+const shipData={
+ scout:{name:"Scout",icon:"🛰️",cost:{metal:120,crystal:50,energy:20},power:12},
+ fighter:{name:"Fighter",icon:"🚀",cost:{metal:260,crystal:110,energy:50},power:35},
+ cruiser:{name:"Cruiser",icon:"🛸",cost:{metal:650,crystal:320,energy:130},power:100},
+ carrier:{name:"Carrier",icon:"🚢",cost:{metal:1400,crystal:850,energy:350},power:260}
+};
+const planets=[
+ {name:"Aurelia",type:"Ocean World",reward:{metal:700,crystal:1100},cost:900,pop:0},
+ {name:"Kronos",type:"Iron World",reward:{metal:1600,crystal:500},cost:1100,pop:0},
+ {name:"Elysium",type:"Gaia World",reward:{metal:900,crystal:900},cost:1400,pop:0},
+ {name:"Vanta",type:"Dark World",reward:{metal:500,crystal:1700},cost:1800,pop:0},
+ {name:"Helios",type:"Volcanic World",reward:{metal:2100,crystal:600},cost:2300,pop:0}
+];
+let stars=[];
+function rand(a,b){return a+Math.random()*(b-a)}
+function initStars(){stars=[];for(let i=0;i<95;i++)stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.8+.3,a:Math.random()*.8+.2});}
+function production(){
+ let m=9+G.buildings.mine*8, c=5+G.buildings.crystal*6, e=6+G.buildings.reactor*8;
+ m*=1+G.research.mining*.15;c*=1+G.research.mining*.08;e*=1+G.research.reactor*.2;
+ return {metal:m,crystal:c,energy:e};
+}
+function addLog(t){G.logs.unshift("T"+G.turn+" · "+t);G.logs=G.logs.slice(0,30)}
+function can(cost){return Object.entries(cost).every(([k,v])=>(G.res[k]||0)>=v)}
+function pay(cost){for(const [k,v] of Object.entries(cost))G.res[k]-=v}
+function costText(cost){return Object.entries(cost).map(([k,v])=>`${v} ${k}`).join(" · ")}
+function renderResources(){
+ $("#resources").innerHTML=`<div class="res">⛓️ <b>${fmt(G.res.metal)}</b></div><div class="res">💎 <b>${fmt(G.res.crystal)}</b></div><div class="res">⚡ <b>${fmt(G.res.energy)}</b></div><div class="res">💰 <b>${fmt(G.res.credits)}</b></div>`;
+}
+function renderDashboard(){
+ const p=production();
+ $("#dashStats").innerHTML=[
+  ["⛓️","Metal / turn",p.metal],["💎","Crystal / turn",p.crystal],["⚡","Energy / turn",p.energy],["🏆","Empire score",G.score]
+ ].map(x=>`<div class="card"><div class="small">${x[0]} ${x[1]}</div><div class="big">${fmt(x[2])}</div></div>`).join("");
+ $("#log").innerHTML=G.logs.map(x=>`<div>${x}</div>`).join("");
+ const totalShips=Object.values(G.fleet).reduce((a,b)=>a+b,0);
+ const power=fleetPower();
+ $("#status").innerHTML=`<div class="item"><span>Fleet size</span><b>${totalShips} ships</b></div><div class="item"><span>Combat power</span><b>${fmt(power)}</b></div><div class="item"><span>Colonies</span><b>${G.colonies.length}</b></div><div class="item"><span>Research</span><b>${Object.values(G.research).reduce((a,b)=>a+b,0)} levels</b></div>`;
+}
+function renderPlanet(){
+ $("#pop").textContent=fmt(G.pop);
+ const p=production();
+ $("#planetStats").innerHTML=[["⛓️","Metal",G.res.metal],["💎","Crystal",G.res.crystal],["⚡","Energy",G.res.energy],["👥","Population",G.pop]].map(x=>`<div class="card"><div class="small">${x[0]} ${x[1]}</div><div class="big">${fmt(x[2])}</div></div>`).join("");
+ $("#planetBuildings").innerHTML=buildData.map(b=>`<div class="item"><div><b>${b.icon} ${b.name}</b><div class="small">Level ${G.buildings[b.id]} · ${b.desc}</div></div><span class="tag">ACTIVE</span></div>`).join("");
+ $("#queue").innerHTML=G.queue.length?G.queue.map((q,i)=>`<div class="item"><span>${q}</span><span class="tag">${i+1}</span></div>`).join(""):"<div class='muted'>Construction queue is empty.</div>";
+}
+function renderBuild(){
+ $("#buildList").innerHTML=buildData.map(b=>{
+  const lv=G.buildings[b.id], cost={metal:b.base.metal*lv,crystal:b.base.crystal*lv};
+  return `<div class="card"><h3>${b.icon} ${b.name}</h3><div class="small">${b.desc}</div><p>Level <b>${lv}</b></p><div class="tag">${costText(cost)}</div><br><button class="primary" style="margin-top:10px" onclick="build('${b.id}')">Upgrade</button></div>`;
+ }).join("");
+}
+function build(id){const b=buildData.find(x=>x.id===id),lv=G.buildings[id],cost={metal:b.base.metal*lv,crystal:b.base.crystal*lv};if(!can(cost))return toast("Not enough resources.");pay(cost);G.buildings[id]++;G.score+=25;G.queue.unshift(`${b.name} upgraded to level ${G.buildings[id]}`);G.queue=G.queue.slice(0,5);addLog(`${b.name} upgraded.`);renderAll();save()}
+function renderResearch(){
+ $("#researchList").innerHTML=researchData.map(r=>{let lv=G.research[r.id],cost={metal:r.cost.metal*(lv+1),crystal:r.cost.crystal*(lv+1)};return `<div class="card"><h3>${r.icon} ${r.name}</h3><div class="small">${r.desc}</div><p>Level <b>${lv}/${r.max}</b></p><div class="progress"><div class="bar" style="width:${lv/r.max*100}%"></div></div>${lv<r.max?`<div class="tag">${costText(cost)}</div><br><button class="primary" style="margin-top:10px" onclick="research('${r.id}')">Research</button>`:`<span class="good">MAXIMUM LEVEL</span>`}</div>`}).join("");
+}
+function research(id){const r=researchData.find(x=>x.id===id),lv=G.research[id],cost={metal:r.cost.metal*(lv+1),crystal:r.cost.crystal*(lv+1)};if(!can(cost))return toast("Not enough resources.");pay(cost);G.research[id]++;G.score+=60;addLog(`${r.name} reached level ${G.research[id]}.`);renderAll();save()}
+function fleetPower(){let x=0;for(const [id,n] of Object.entries(G.fleet))x+=n*shipData[id].power;return x*(1+G.research.weapons*.25)}
+function renderFleet(){
+ $("#fleetList").innerHTML=Object.entries(shipData).map(([id,s])=>`<div class="card"><h3>${s.icon} ${s.name}</h3><div class="small">Combat power: ${s.power}</div><p>Owned: <b>${G.fleet[id]}</b></p><div class="tag">${costText(s.cost)}</div><br><button style="margin-top:10px" onclick="buildShip('${id}')">Build ${s.name}</button></div>`).join("")+
+ `<div class="card"><h3>⚡ Fleet Power</h3><div class="big">${fmt(fleetPower())}</div><div class="small">Weapons research included.</div></div>`;
+}
+function buildShip(id){let s=shipData[id];if(!can(s.cost))return toast("Not enough resources.");if(id==="cruiser"&&G.buildings.shipyard<2)return toast("Shipyard level 2 required.");if(id==="carrier"&&G.buildings.shipyard<4)return toast("Shipyard level 4 required.");pay(s.cost);G.fleet[id]++;G.score+=10;addLog(`${s.name} commissioned.`);renderAll();save()}
+function renderColonies(){
+ let list=planets.map((p,i)=>{let owned=G.colonies.some(c=>c.name===p.name);return `<div class="card"><h3>🪐 ${p.name}</h3><div class="small">${p.type}</div><p>Potential: ⛓️${p.reward.metal} · 💎${p.reward.crystal}</p><div class="tag">Cost ${p.cost} credits</div><br><button style="margin-top:10px" ${owned?"disabled":""} onclick="selectPlanet(${i})">${owned?"CONTROLLED":"Select"}</button></div>`}).join("");
+ $("#colonyList").innerHTML=`<div class="card"><h3>🏛️ Controlled Worlds</h3>${G.colonies.map(c=>`<div class="item"><span>🪐 ${c.name}</span><span class="tag">${fmt(c.pop)} POP</span></div>`).join("")}</div>`+list;
+}
+function selectPlanet(i){G.selected=i;toast(`${planets[i].name} selected.`);renderColonies()}
+function colonizeSelected(){if(G.selected===null)return toast("Select a planet first.");let p=planets[G.selected];if(G.colonies.some(c=>c.name===p.name))return toast("Already controlled.");let discount=1-G.research.colonization*.08,cost=Math.ceil(p.cost*discount);if(G.res.credits<cost)return toast(`Need ${cost} credits.`);G.res.credits-=cost;G.colonies.push({name:p.name,type:p.type,pop:1000,level:1});G.score+=500;G.selected=null;addLog(`${p.name} has joined the empire.`);renderAll();save()}
+function renderMarket(){
+ $("#marketTable").innerHTML=Object.entries(market).map(([k,v])=>`<tr><td>${k==="metal"?"⛓️":k==="crystal"?"💎":"⚡"} ${k}</td><td>${v} credits</td><td>${fmt(G.res[k])}</td><td><button onclick="trade('${k}',1)">Sell 100</button> <button onclick="trade('${k}',-1)">Buy 100</button></td></tr>`).join("");
+}
+function trade(k,dir){let amount=100,price=market[k]*amount;if(dir>0){if(G.res[k]<amount)return toast("Insufficient stock.");G.res[k]-=amount;G.res.credits+=price}else{if(G.res.credits<price)return toast("Insufficient credits.");G.res.credits-=price;G.res[k]+=amount}addLog(`${dir>0?"Sold":"Bought"} 100 ${k}.`);renderAll();save()}
+function renderBattle(){
+ const enemies=[["Pirate Raiders",500,1.1],["Void Syndicate",1300,1.8],["Zeta Dominion",3000,2.8],["Ancient Machine",6500,5]];
+ $("#enemies").innerHTML=enemies.map((e,i)=>`<div class="item"><div><b>⚠️ ${e[0]}</b><div class="small">Power ${e[1]} · Reward ×${e[2]}</div></div><button onclick="attack(${i})">Attack</button></div>`).join("");
+ $("#battleLog").innerHTML=G.battleLogs.length?G.battleLogs.map(x=>`<div>${x}</div>`).join(""):"No battles recorded.";
+}
+function attack(i){const e=[["Pirate Raiders",500,1.1],["Void Syndicate",1300,1.8],["Zeta Dominion",3000,2.8],["Ancient Machine",6500,5]][i],p=fleetPower();if(p<e[1]*.65)return toast("Your fleet is too weak.");let chance=Math.min(.97,.55+p/(e[1]*3));if(Math.random()<chance){let loss=Math.max(0,Math.floor(e[1]/500));let ids=Object.keys(G.fleet);for(let n=0;n<loss;n++){let id=ids[Math.floor(Math.random()*ids.length)];if(G.fleet[id]>0)G.fleet[id]--}let reward=Math.floor(e[1]*e[2]);G.res.credits+=reward;G.res.metal+=Math.floor(e[1]*.4);G.res.crystal+=Math.floor(e[1]*.2);G.score+=e[1];G.battleLogs.unshift(`VICTORY · ${e[0]} defeated. +${reward} credits.`);addLog(`Victory against ${e[0]}.`)}else{let loss=Math.max(1,Math.floor(Object.values(G.fleet).reduce((a,b)=>a+b,0)*.12));for(let n=0;n<loss;n++){let ids=Object.keys(G.fleet).filter(x=>G.fleet[x]>0);if(!ids.length)break;let id=ids[Math.floor(Math.random()*ids.length)];G.fleet[id]--}G.battleLogs.unshift(`DEFEAT · ${e[0]} survived the engagement.`);addLog(`Defeat against ${e[0]}.`)}G.battleLogs=G.battleLogs.slice(0,15);renderAll();save()}
+function scanGalaxy(){for(let i=0;i<3;i++){let p=planets[Math.floor(Math.random()*planets.length)];if(!G.discovered.includes(p.name))G.discovered.push(p.name)}G.score+=15;addLog(`Long-range scan completed. ${G.discovered.length} worlds mapped.`);toast("Sector scan complete.");renderAll();save()}
+function tick(){let p=production();G.res.metal+=p.metal;G.res.crystal+=p.crystal;G.res.energy+=p.energy;G.pop+=Math.max(1,Math.floor(G.pop*.001));G.turn++;if(Math.random()<.18){let keys=Object.keys(market);let k=keys[Math.floor(Math.random()*keys.length)];market[k]=Math.max(2,Math.round(market[k]*(.9+Math.random()*.25)));}renderAll();save()}
+function renderAll(){renderResources();renderDashboard();renderPlanet();renderBuild();renderResearch();renderFleet();renderColonies();renderMarket();renderBattle();draw()}
+function save(){localStorage.setItem("spaceEmpireSave",JSON.stringify(G))}
+function load(){try{let x=JSON.parse(localStorage.getItem("spaceEmpireSave"));if(x)G=Object.assign(clone(initial),x)}catch(e){}}
+function openSave(){$("#modalbox").innerHTML=`<div class="modalhead"><h2>💾 Save / Load</h2><button onclick="closeModal()">✕</button></div><p class="muted">Your game autosaves to this browser.</p><div class="actions"><button class="primary" onclick="save();toast('Saved.')">Save Now</button><button onclick="exportSave()">Export</button><button onclick="importSave()">Import</button></div>`;$("#modal").classList.add("show")}
+function closeModal(){$("#modal").classList.remove("show")}
+function exportSave(){const b=new Blob([JSON.stringify(G)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="space-empire-save.json";a.click()}
+function importSave(){const i=document.createElement("input");i.type="file";i.accept=".json";i.onchange=()=>{const r=new FileReader();r.onload=()=>{try{G=Object.assign(clone(initial),JSON.parse(r.result));save();renderAll();closeModal();toast("Save imported.")}catch(e){toast("Invalid save.")}};r.readAsText(i.files[0])};i.click()}
+function resetGame(){if(confirm("Start a new empire? Current autosave will be replaced.")){G=clone(initial);save();renderAll()}}
+function toast(t){const d=document.createElement("div");d.textContent=t;Object.assign(d.style,{position:"fixed",right:"18px",bottom:"18px",zIndex:50,padding:"11px 14px",background:"#0d1728",border:"1px solid #38527e",borderRadius:"9px",boxShadow:"0 10px 30px #0008"});document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
+$$(".nav button[data-view]").forEach(b=>b.onclick=()=>{$$(".nav button[data-view]").forEach(x=>x.classList.remove("active"));b.classList.add("active");$$(".view").forEach(v=>v.classList.remove("active"));$("#"+b.dataset.view).classList.add("active");draw()});
+$("#modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
+const canvas=$("#space"),ctx=canvas.getContext("2d");
+function resize(){const r=canvas.getBoundingClientRect(),d=devicePixelRatio||1;canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);draw()}
+function draw(){if(!canvas.offsetParent)return;const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02040b";ctx.fillRect(0,0,w,h);
+ for(const s of stars){ctx.globalAlpha=s.a;ctx.fillStyle="#dbe8ff";ctx.beginPath();ctx.arc(s.x*w,s.y*h,s.r,0,7);ctx.fill()}ctx.globalAlpha=1;
+ for(let i=0;i<8;i++){let x=rand(0,w),y=rand(0,h);ctx.strokeStyle="#172442";ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(x,y,rand(40,130),0,7);ctx.stroke()}ctx.globalAlpha=1;
+ // routes
+ ctx.strokeStyle="#254061";ctx.globalAlpha=.55;for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(w*.12+i*w*.13,h*.18);ctx.lineTo(w*.28+i*w*.09,h*.78);ctx.stroke()}ctx.globalAlpha=1;
+ // homeworld
+ let hx=w*.5,hy=h*.52;ctx.shadowBlur=30;ctx.shadowColor="#45ddff";ctx.fillStyle="#4de7ff";ctx.beginPath();ctx.arc(hx,hy,9,0,7);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#dceeff";ctx.font="12px system-ui";ctx.fillText("Nova Prime",hx+14,hy+4);
+ // discovered planets
+ G.discovered.forEach((name,i)=>{let a=i*1.7+.5,r=100+(i%4)*55,x=hx+Math.cos(a)*r,y=hy+Math.sin(a)*r*.55;ctx.fillStyle=i%2?"#b58cff":"#ffd166";ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fill();ctx.fillStyle="#aabbd9";ctx.fillText(name,x+8,y+4)});
+ $("#coord").textContent=`X: ${Math.round(hx)} · Y: ${Math.round(hy)}`;
+}
+window.addEventListener("resize",resize);
+load();initStars();renderAll();setTimeout(resize,50);setInterval(tick,5000);
+</script>
+</body>
+</html>
