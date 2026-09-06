@@ -1,1903 +1,1021 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Space Empire — امپراتوری فضایی</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>امپراتوری کهکشان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
---bg:#030610;--panel:#091020f2;--panel2:#0d1729;--line:#263958;
---text:#edf5ff;--muted:#8fa4c8;--cyan:#48e5ff;--blue:#628cff;
---green:#55e6a5;--gold:#ffd166;--red:#ff647e;--purple:#b58cff
+  --bg-deep:#05060f;
+  --bg-panel:#0c1024;
+  --bg-panel2:#12172e;
+  --line:#232a4d;
+  --accent:#6ee7ff;
+  --accent2:#a78bfa;
+  --gold:#f5c66b;
+  --danger:#ff6b81;
+  --ok:#5ce6a6;
+  --text:#e8ecff;
+  --text-dim:#8891bd;
+  --metal:#9fb4d8;
+  --crystal:#c98bff;
+  --energy:#ffd166;
 }
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 50% 0,#172b5b,#050914 42%,#02030a 100%);color:var(--text);font-family:Tahoma,Segoe UI,sans-serif;min-height:100vh}
-button,input,select{font:inherit}
-button{cursor:pointer;color:var(--text);background:#101a2d;border:1px solid var(--line);border-radius:9px;padding:9px 12px}
-button:hover{background:#182741;border-color:#5475ae}
-button.primary{background:linear-gradient(135deg,#23669b,#183e70);border-color:#4385bd}
-button:disabled{opacity:.45;cursor:not-allowed}
-h1,h2,h3,p{margin-top:0}
-.muted,.small{color:var(--muted);font-size:12px}
-.good{color:var(--green)}.danger{color:var(--red)}.gold{color:var(--gold)}
-#app{display:grid;grid-template-columns:235px 1fr;grid-template-rows:68px 1fr;min-height:100vh}
-header{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#060b17ed;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
-.logo{font-weight:900;font-size:20px;letter-spacing:1px}.logo span{color:var(--cyan)}
-.topstats{display:flex;gap:7px;flex-wrap:wrap}
-.res{padding:7px 10px;border:1px solid var(--line);background:#091220;border-radius:9px;font-size:12px}
-aside{background:#060a15;border-left:1px solid var(--line);padding:14px 11px}
-.navtitle{color:#607398;font-size:11px;margin:10px 8px}
-.nav{display:flex;flex-direction:column;gap:5px}
-.nav button{width:100%;text-align:right;background:transparent;border-color:transparent}
-.nav button.active{background:#11233d;border-color:#294a72;color:var(--cyan)}
-main{padding:17px;overflow:auto}
-.view{display:none}.view.active{display:block}
-.title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-.title h1{font-size:23px;margin-bottom:4px}
-.grid{display:grid;gap:12px}
-.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
-.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.card{background:linear-gradient(145deg,#0c1527ee,#070d19ee);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 12px 35px #0005}
-.card h3{font-size:15px;margin-bottom:8px}
-.big{font-size:25px;font-weight:800}
-.tag{display:inline-block;padding:4px 7px;border-radius:6px;background:#16233d;color:#aec0e1;font-size:11px}
-.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #1a2740}
-.item:last-child{border:0}
-.actions{display:flex;gap:7px;flex-wrap:wrap}
-.progress{height:7px;background:#070b13;border-radius:99px;overflow:hidden;margin:9px 0}
-.bar{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue))}
-#galaxy,#surfaceMap{height:540px;position:relative;overflow:hidden;background:#02040b;border:1px solid var(--line);border-radius:14px}
-canvas{display:block;width:100%;height:100%}
-.mapui{position:absolute;inset:11px;display:flex;justify-content:space-between;pointer-events:none}
-.floating{background:#080e1ddd;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{text-align:right;padding:9px;border-bottom:1px solid #1c2740}
-th{color:#8092b6;font-size:11px}
-.log{max-height:240px;overflow:auto}.log div{padding:8px;border-bottom:1px solid #18233a;font-size:12px}
-.modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:15px;z-index:50}
-.modal.show{display:flex}
-.modalbox{width:min(720px,100%);max-height:92vh;overflow:auto;background:#08101f;border:1px solid #36527f;border-radius:15px;padding:18px;box-shadow:0 30px 90px #000}
-.modalhead{display:flex;justify-content:space-between;align-items:center}
-.field{margin:11px 0}.field label{display:block;color:#aabbd8;font-size:12px;margin-bottom:6px}
-.field input{width:100%;padding:11px;border-radius:9px;border:1px solid var(--line);background:#050b15;color:white;outline:none}
-.field input:focus{border-color:var(--cyan)}
-.center{max-width:420px;margin:auto}
-.eventImg{width:100%;max-height:280px;object-fit:cover;border-radius:11px;border:1px solid var(--line)}
-.planet{cursor:pointer;transition:.2s}.planet:hover{transform:translateY(-3px);border-color:var(--cyan)}
-.dot{width:46px;height:46px;border-radius:50%;margin-bottom:8px;box-shadow:0 0 35px #48e5ff55}
-#onlineCount{color:var(--green)}
-@media(max-width:850px){
-#app{grid-template-columns:1fr;grid-template-rows:64px auto 1fr}
-header{grid-column:1;position:relative}
-.topstats{max-width:65%;overflow:hidden}
-aside{padding:6px;border-left:0;border-bottom:1px solid var(--line);overflow-x:auto}
-.nav{flex-direction:row}.navtitle{display:none}
-.nav button{white-space:nowrap;width:auto}
-main{padding:10px}
-.g4,.g3{grid-template-columns:repeat(2,1fr)}
-.g2{grid-template-columns:1fr}
-#galaxy,#surfaceMap{height:420px}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Vazirmatn',sans-serif;
+  background:var(--bg-deep);
+  color:var(--text);
+  overflow:hidden;
+  position:relative;
+  height:100vh;
+  width:100vw;
 }
-@media(max-width:500px){
-.g4,.g3{grid-template-columns:1fr}
-.title{flex-direction:column;align-items:flex-start}
+#stars{position:fixed;inset:0;z-index:0;}
+#app{position:relative;z-index:1;height:100%;width:100%;overflow:hidden;}
+.hidden{display:none !important;}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;}
+input{font-family:inherit;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ---------- AUTH ---------- */
+#authScreen{
+  height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  padding:20px;text-align:center;
 }
+.logo-title{
+  font-size:clamp(28px,6vw,46px);font-weight:900;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  letter-spacing:1px;margin-bottom:6px;
+}
+.logo-sub{color:var(--text-dim);font-size:14px;margin-bottom:28px;letter-spacing:.5px;}
+.auth-card{
+  background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel2));
+  border:1px solid var(--line);border-radius:18px;
+  padding:28px;width:min(380px,92vw);
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.auth-tabs{display:flex;background:var(--bg-deep);border-radius:12px;padding:4px;margin-bottom:20px;}
+.auth-tab{flex:1;padding:10px;border-radius:9px;background:transparent;color:var(--text-dim);font-weight:700;font-size:14px;}
+.auth-tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04050c;}
+.field{margin-bottom:14px;text-align:right;}
+.field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
+.field input{
+  width:100%;padding:12px 14px;border-radius:10px;background:var(--bg-deep);
+  border:1px solid var(--line);color:var(--text);font-size:15px;
+}
+.field input:focus{border-color:var(--accent);}
+.btn-primary{
+  width:100%;padding:13px;border-radius:10px;margin-top:6px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:#04050c;font-weight:800;font-size:15px;
+}
+.btn-primary:active{transform:scale(.98);}
+.auth-msg{margin-top:12px;font-size:13px;min-height:18px;}
+.auth-msg.err{color:var(--danger);}
+.auth-msg.ok{color:var(--ok);}
+.auth-note{margin-top:18px;font-size:11px;color:var(--text-dim);line-height:1.8;}
+
+/* ---------- GAME LAYOUT ---------- */
+#gameScreen{height:100%;display:flex;flex-direction:column;}
+#topbar{
+  display:flex;align-items:center;gap:14px;padding:8px 14px;
+  background:rgba(12,16,36,.92);border-bottom:1px solid var(--line);
+  backdrop-filter:blur(6px);flex-wrap:wrap;
+}
+.brand{font-weight:900;color:var(--accent);font-size:15px;white-space:nowrap;}
+.res-pill{
+  display:flex;align-items:center;gap:5px;background:var(--bg-panel2);
+  border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:600;white-space:nowrap;
+}
+.res-pill b{font-variant-numeric:tabular-nums;}
+#topbar .spacer{flex:1;}
+.username-chip{font-size:12px;color:var(--text-dim);}
+.logout-btn{background:var(--bg-panel2);border:1px solid var(--line);color:var(--danger);border-radius:8px;padding:6px 10px;font-size:12px;}
+
+#mainArea{flex:1;overflow-y:auto;padding:14px;padding-bottom:90px;}
+
+.section-title{font-size:16px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.card{
+  background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel2));
+  border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;
+}
+
+/* Galaxy map */
+#galaxyGrid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px;
+}
+.planet-tile{
+  background:var(--bg-panel2);border:1px solid var(--line);border-radius:12px;
+  padding:10px 6px;text-align:center;font-size:11px;position:relative;transition:transform .15s;
+}
+.planet-tile:active{transform:scale(.94);}
+.planet-tile.home{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
+.planet-emoji{font-size:26px;display:block;margin-bottom:4px;}
+.planet-name{font-weight:700;font-size:11px;color:var(--text);}
+.planet-pop{color:var(--text-dim);font-size:10px;margin-top:2px;}
+.danger-dot{position:absolute;top:6px;left:6px;width:8px;height:8px;border-radius:50%;}
+
+/* Planet detail map */
+#planetMapWrap{overflow:auto;border-radius:12px;border:1px solid var(--line);background:radial-gradient(circle at 30% 20%,#141a38,#070914);}
+#planetGrid{
+  display:grid;grid-template-columns:repeat(8,44px);grid-template-rows:repeat(8,44px);gap:3px;padding:10px;width:max-content;margin:auto;
+}
+.cell{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;
+}
+.cell.mine{background:rgba(245,198,107,.18);border-color:var(--gold);}
+.cell.other{background:rgba(110,231,255,.1);border-color:var(--accent);}
+.cell .tag{position:absolute;bottom:-14px;font-size:8px;color:var(--text-dim);white-space:nowrap;left:50%;transform:translateX(-50%);}
+
+/* Buildings / research / fleet lists */
+.item-row{
+  display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--bg-panel2);
+  border:1px solid var(--line);margin-bottom:8px;
+}
+.item-icon{font-size:24px;width:34px;text-align:center;}
+.item-info{flex:1;min-width:0;}
+.item-title{font-weight:700;font-size:14px;}
+.item-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.item-cost{font-size:11px;margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;}
+.cost-chip{padding:2px 6px;border-radius:6px;background:var(--bg-deep);}
+.cost-chip.afford{color:var(--ok);}
+.cost-chip.short{color:var(--danger);}
+.mini-btn{
+  padding:9px 14px;border-radius:9px;background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:#04050c;font-weight:800;font-size:12px;white-space:nowrap;
+}
+.mini-btn:disabled{opacity:.35;}
+.mini-btn.alt{background:linear-gradient(90deg,var(--gold),#ffb27a);}
+.mini-btn.war{background:linear-gradient(90deg,var(--danger),#ff9a6b);}
+
+/* Bottom nav */
+#bottomnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:5;
+  display:flex;background:rgba(10,13,28,.96);border-top:1px solid var(--line);
+  backdrop-filter:blur(8px);padding:6px 4px;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:7px 2px;color:var(--text-dim);font-size:10px;border-radius:10px;
+}
+.nav-btn.active{color:var(--accent);background:rgba(110,231,255,.08);}
+.nav-btn .icon{font-size:18px;}
+
+/* Modal / events */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(2,3,10,.82);z-index:50;
+  display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);
+}
+.modal-box{
+  background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel2));
+  border:1px solid var(--accent);border-radius:18px;padding:22px;max-width:420px;width:100%;
+  text-align:center;box-shadow:0 0 60px rgba(110,231,255,.25);
+  animation:popin .25s ease;
+}
+@keyframes popin{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-box img,.modal-box svg{width:100%;max-height:180px;object-fit:contain;margin-bottom:14px;filter:drop-shadow(0 0 12px rgba(110,231,255,.4));}
+.modal-title{font-size:17px;font-weight:800;color:var(--gold);margin-bottom:8px;}
+.modal-text{font-size:14px;line-height:1.9;color:var(--text);margin-bottom:18px;}
+.toast{
+  position:fixed;top:70px;right:14px;left:14px;z-index:60;display:flex;flex-direction:column;gap:8px;pointer-events:none;
+}
+.toast-item{
+  background:var(--bg-panel2);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:13px;
+  animation:slidein .3s ease,fadeout .4s ease 3.6s forwards;box-shadow:0 6px 20px rgba(0,0,0,.4);
+}
+@keyframes slidein{from{transform:translateY(-14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+@keyframes fadeout{to{opacity:0;transform:translateY(-8px);}}
+
+.rel-bar{height:8px;border-radius:5px;background:var(--bg-deep);overflow:hidden;margin-top:6px;}
+.rel-fill{height:100%;border-radius:5px;}
+.tag-pill{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-deep);color:var(--text-dim);}
+
+.scan-result{font-size:12px;line-height:2;color:var(--text-dim);margin-top:10px;background:var(--bg-deep);border-radius:10px;padding:10px;}
+.loading-spin{display:inline-block;width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
-
 <body>
+<canvas id="stars"></canvas>
+<div id="toastWrap" class="toast"></div>
 
 <div id="app">
 
-<header>
-<div class="logo">🚀 SPACE <span>EMPIRE</span></div>
-<div class="topstats" id="resources"></div>
-</header>
+  <!-- ================= AUTH ================= -->
+  <div id="authScreen">
+    <div class="logo-title">🚀 امپراتوری کهکشان</div>
+    <div class="logo-sub">یک بازی چندنفره واقعی در دل کهکشان — ۳۰ سیاره، هزاران سرنوشت</div>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">ورود</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">ساخت حساب</button>
+      </div>
+      <div class="field">
+        <label>نام کاربری</label>
+        <input id="authUser" type="text" placeholder="مثلاً: کاپیتان_آریا" maxlength="16">
+      </div>
+      <div class="field">
+        <label>رمز عبور</label>
+        <input id="authPass" type="password" placeholder="رمز عبور خود را وارد کنید" maxlength="30">
+      </div>
+      <button class="btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">ورود به کهکشان</button>
+      <div class="auth-msg" id="authMsg"></div>
+      <div class="auth-note">
+        ⚠️ این یک بازی چندنفره ساده مبتنی بر حافظهٔ اشتراکی آرتیفکت است؛ اطلاعات حساب (از جمله رمز عبور) به‌صورت متن ساده بین بازیکنان این دنیا مشترک است و امنیت درجه‌یک ندارد. برای یک بازی دوستانه مناسب است.
+      </div>
+    </div>
+  </div>
 
-<aside>
+  <!-- ================= GAME ================= -->
+  <div id="gameScreen" class="hidden">
+    <div id="topbar">
+      <div class="brand">🌌 امپراتوری کهکشان</div>
+      <div class="res-pill">⛏️ <b id="hudMetal">0</b></div>
+      <div class="res-pill">💎 <b id="hudCrystal">0</b></div>
+      <div class="res-pill">⚡ <b id="hudEnergy">0</b></div>
+      <div class="spacer"></div>
+      <div class="username-chip" id="hudUser"></div>
+      <button class="logout-btn" onclick="logout()">خروج</button>
+    </div>
 
-<div class="navtitle">فرماندهی</div>
+    <div id="mainArea">
+      <div id="view-home"></div>
+      <div id="view-galaxy" class="hidden"></div>
+      <div id="view-build" class="hidden"></div>
+      <div id="view-research" class="hidden"></div>
+      <div id="view-fleet" class="hidden"></div>
+      <div id="view-war" class="hidden"></div>
+      <div id="view-market" class="hidden"></div>
+      <div id="view-aliens" class="hidden"></div>
+    </div>
 
-<div class="nav">
-<button class="active" data-view="dashboard">🌌 کهکشان</button>
-<button data-view="planet">🪐 سیاره من</button>
-<button data-view="build">🏭 ساخت‌وساز</button>
-<button data-view="research">🔬 تحقیقات</button>
-<button data-view="fleet">🚀 ناوگان</button>
-<button data-view="colonies">🌍 ۳۰ سیاره</button>
-<button data-view="market">📦 بازار</button>
-<button data-view="battle">⚔️ نبرد</button>
+    <div id="bottomnav">
+      <button class="nav-btn active" data-v="home" onclick="showView('home')"><span class="icon">🌍</span>سیاره</button>
+      <button class="nav-btn" data-v="galaxy" onclick="showView('galaxy')"><span class="icon">🗺️</span>کهکشان</button>
+      <button class="nav-btn" data-v="build" onclick="showView('build')"><span class="icon">🏭</span>ساخت</button>
+      <button class="nav-btn" data-v="research" onclick="showView('research')"><span class="icon">🔬</span>تحقیق</button>
+      <button class="nav-btn" data-v="fleet" onclick="showView('fleet')"><span class="icon">🛰️</span>ناوگان</button>
+      <button class="nav-btn" data-v="war" onclick="showView('war')"><span class="icon">⚔️</span>نبرد</button>
+      <button class="nav-btn" data-v="market" onclick="showView('market')"><span class="icon">📦</span>بازار</button>
+      <button class="nav-btn" data-v="aliens" onclick="showView('aliens')"><span class="icon">👽</span>بیگانگان</button>
+    </div>
+  </div>
 </div>
 
-<div class="navtitle">حساب</div>
-
-<div class="nav">
-<button onclick="logout()">🚪 خروج از حساب</button>
-</div>
-
-</aside>
-
-<main>
-
-<section id="dashboard" class="view active">
-
-<div class="title">
-<div>
-<h1>🌌 فرماندهی کهکشانی</h1>
-<div class="muted">
-فرمانده: <b id="playerName">—</b> ·
-سیاره: <b id="planetNameTop">—</b> ·
-بازیکنان آنلاین: <span id="onlineCount">—</span>
-</div>
-</div>
-<button class="primary" onclick="scanGalaxy()">📡 اسکن عمیق</button>
-</div>
-
-<div class="grid g4" id="dashStats"></div>
-
-<div id="galaxy">
-<canvas id="space"></canvas>
-
-<div class="mapui">
-<div class="floating">شبکه کهکشانی · <span class="good">ONLINE</span></div>
-<div class="floating" id="coord">X:— · Y:—</div>
-</div>
-
-</div>
-
-<div class="grid g2" style="margin-top:12px">
-
-<div class="card">
-<h3>📜 گزارش فرماندهی</h3>
-<div class="log" id="log"></div>
-</div>
-
-<div class="card">
-<h3>👥 بازیکنان سیاره</h3>
-<div id="playerList"></div>
-</div>
-
-</div>
-
-</section>
-
-
-<section id="planet" class="view">
-
-<div class="title">
-<div>
-<h1 id="planetTitle">🪐 سیاره</h1>
-<div class="muted" id="planetDesc"></div>
-</div>
-<span class="tag">پایگاه اصلی</span>
-</div>
-
-<div class="grid g4" id="planetStats"></div>
-
-<div id="surfaceMap">
-<canvas id="surface"></canvas>
-
-<div class="mapui">
-<div class="floating">🗺️ نقشه سطحی · پایگاه‌های بازیکنان</div>
-<div class="floating" id="surfaceCoord">X:— · Y:—</div>
-</div>
-
-</div>
-
-<div class="grid g2" style="margin-top:12px">
-
-<div class="card">
-<h3>🏠 پایگاه‌های سیاره</h3>
-<div id="bases"></div>
-</div>
-
-<div class="card">
-<h3>🔭 سیستم شناسایی</h3>
-<div id="scanner"></div>
-</div>
-
-</div>
-
-</section>
-
-
-<section id="build" class="view">
-<div class="title">
-<div>
-<h1>🏭 ساخت‌وساز</h1>
-<div class="muted">توسعه زیرساخت‌های پایگاه.</div>
-</div>
-</div>
-<div class="grid g3" id="buildList"></div>
-</section>
-
-
-<section id="research" class="view">
-<div class="title">
-<div>
-<h1>🔬 تحقیقات</h1>
-<div class="muted">فناوری‌های پیشرفته امپراتوری.</div>
-</div>
-</div>
-<div class="grid g3" id="researchList"></div>
-</section>
-
-
-<section id="fleet" class="view">
-<div class="title">
-<div>
-<h1>🚀 ناوگان</h1>
-<div class="muted">ساخت ناوگان و تجهیزات فضایی.</div>
-</div>
-</div>
-<div class="grid g3" id="fleetList"></div>
-</section>
-
-
-<section id="colonies" class="view">
-<div class="title">
-<div>
-<h1>🌍 سامانه شناسایی ۳۰ سیاره</h1>
-<div class="muted">هر سیاره دارای اقلیم، منابع، خطرات و نقشه اختصاصی است.</div>
-</div>
-</div>
-<div class="grid g3" id="colonyList"></div>
-</section>
-
-
-<section id="market" class="view">
-
-<div class="title">
-<div>
-<h1>📦 بازار کهکشانی</h1>
-<div class="muted">قیمت‌ها به صورت پویا تغییر می‌کنند.</div>
-</div>
-</div>
-
-<div class="card">
-<table>
-<thead>
-<tr>
-<th>منبع</th>
-<th>قیمت</th>
-<th>موجودی</th>
-<th>عملیات</th>
-</tr>
-</thead>
-<tbody id="marketTable"></tbody>
-</table>
-</div>
-
-</section>
-
-
-<section id="battle" class="view">
-
-<div class="title">
-<div>
-<h1>⚔️ مرکز نبرد</h1>
-<div class="muted">قدرت ناوگان خود را آزمایش کنید.</div>
-</div>
-</div>
-
-<div class="grid g2">
-
-<div class="card">
-<h3>سیگنال‌های دشمن</h3>
-<div id="enemies"></div>
-</div>
-
-<div class="card">
-<h3>گزارش نبرد</h3>
-<div class="log" id="battleLog"></div>
-</div>
-
-</div>
-
-</section>
-
-</main>
-</div>
-
-
-<div class="modal" id="modal">
-<div class="modalbox" id="modalbox"></div>
-</div>
-
+<div id="modalRoot"></div>
 
 <script>
-"use strict";
+/* ============================================================
+   STARFIELD BACKGROUND
+============================================================ */
+(function(){
+  const c=document.getElementById('stars');const ctx=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;
+    stars=Array.from({length:140},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,s:Math.random()*.02+.003,a:Math.random()}));
+  }
+  window.addEventListener('resize',resize);resize();
+  function loop(){
+    ctx.fillStyle='#05060f';ctx.fillRect(0,0,c.width,c.height);
+    for(const st of stars){
+      st.a+=st.s; const alpha=Math.abs(Math.sin(st.a));
+      ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,7);
+      ctx.fillStyle=`rgba(200,220,255,${alpha*.9})`;ctx.fill();
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
 
-/*
-===========================================================
-آدرس سرور آنلاین
-===========================================================
-اگر server.js را روی Render / Railway / VPS اجرا کردی:
-آدرس زیر را تغییر بده.
-مثال:
-https://space-empire-api.onrender.com
-===========================================================
-*/
+/* ============================================================
+   STORAGE HELPERS
+============================================================ */
+async function sGet(key,shared){
+  try{ const r=await window.storage.get(key,shared); return r?JSON.parse(r.value):null; }
+  catch(e){ return null; }
+}
+async function sSet(key,value,shared){
+  try{ await window.storage.set(key,JSON.stringify(value),shared); return true; }
+  catch(e){ console.error('storage set failed',e); return false; }
+}
 
-const API="https://YOUR-SERVER-DOMAIN.com";
+/* ============================================================
+   GAME CONFIG
+============================================================ */
+const PLANET_NAMES=["زهرآرا","کاسیوپیا-۷","نووا سرین","ارغوانگاه","تیتان مه‌آلود","خاراسنگ","اورانوس دلتا","سایروس ماینور","وگا فراموش‌شده","آندرومدا-کِی","اهرام سرخ","یخبندان کرونوس","بهشت زیرین","کوازار نه","مهتاب اپسیلون","دژ آهنین","سپیده‌دم پرسئوس","کهکشان خاموش","دروازه اکتان","صخره‌های زمرد","نبولای بنفش","استحکامات وگا","دشت‌های سیمرغ","برج ستاره‌شکن","آب‌های یون","تاریک‌ماه","کوره خورشیدی","سیاره یتیم","حلقه زحل‌گونه","آخرین پناهگاه"];
+const PLANET_TYPES=[{k:'rocky',n:'صخره‌ای',e:'🪨'},{k:'gas',n:'گازی',e:'🌫️'},{k:'ice',n:'یخی',e:'❄️'},{k:'volcanic',n:'آتشفشانی',e:'🌋'},{k:'ocean',n:'اقیانوسی',e:'🌊'},{k:'desert',n:'بیابانی',e:'🏜️'}];
+const NUM_PLANETS=30;
+const GRID_SIZE=8;
+const MIN_PLAYERS_PER_PLANET=3;
 
-const $=s=>document.querySelector(s);
-const $$=s=>[...document.querySelectorAll(s)];
-const fmt=n=>Math.floor(n||0).toLocaleString("fa-IR");
-
-let token=localStorage.getItem("SPACE_EMPIRE_TOKEN");
-let ME=null;
-let G=null;
-let stars=[];
-
-const PLANET_NAMES=[
-"Nova Prime","Aurelia","Kronos","Elysium","Vanta",
-"Helios","Titan","Orion","Kepler","Aether",
-"Nereid","Gaia-X","Draconis","Vesper","Atlas",
-"Zephyr","Prometheus","Luna-9","Cygnus","Erebus",
-"Calypso","Artemis","Hyperion","Mirage","Polaris",
-"Andromeda","Rhea","Solara","Nyx","Valhalla"
-];
-
-const PLANET_TYPES=[
-"اقیانوسی","آهنی","گازی","زمین‌مانند","آتشفشانی",
-"یخی","بیابانی","جنگلی","کریستالی","تاریک"
-];
-
-const PLANET_COLORS=[
-"#48e5ff","#ff667e","#ffd166","#55e6a5",
-"#b58cff","#628cff","#ff9f68","#8fe3cf"
-];
-
-const PLANETS=PLANET_NAMES.map((name,i)=>({
-id:i,
-name,
-type:PLANET_TYPES[i%PLANET_TYPES.length],
-color:PLANET_COLORS[i%PLANET_COLORS.length],
-temperature:-180+((i*71)%760),
-gravity:(.45+(i%8)*.19).toFixed(2),
-water:(i*37)%101,
-danger:(i*53)%101,
-metal:500+i*93,
-crystal:300+i*71,
-energy:200+i*41
-}));
-
-
-const BUILDINGS=[
-{id:"mine",icon:"⛏️",name:"معدن فلز",cost:[180,80],desc:"افزایش استخراج فلز"},
-{id:"crystal",icon:"💎",name:"معدن کریستال",cost:[220,130],desc:"افزایش استخراج کریستال"},
-{id:"reactor",icon:"⚡",name:"راکتور همجوشی",cost:[250,180],desc:"افزایش تولید انرژی"},
-{id:"shipyard",icon:"🏗️",name:"کارخانه کشتی‌سازی",cost:[400,250],desc:"ساخت ناوگان سنگین"},
-{id:"research",icon:"🔬",name:"آزمایشگاه",cost:[300,300],desc:"مرکز تحقیقات"},
-{id:"radar",icon:"📡",name:"رادار مداری",cost:[520,380],desc:"افزایش برد شناسایی"}
-];
-
-
-const RESEARCH=[
-{id:"mining",name:"استخراج پیشرفته",icon:"⛏️",cost:[300,200],max:5,desc:"+۱۵٪ تولید فلز"},
-{id:"reactor",name:"راکتور کوانتومی",icon:"⚡",cost:[250,300],max:5,desc:"+۲۰٪ تولید انرژی"},
-{id:"propulsion",name:"پیشرانش وارپ",icon:"🌀",cost:[450,400],max:5,desc:"افزایش برد فضایی"},
-{id:"weapons",name:"سلاح پلاسما",icon:"🔫",cost:[500,450],max:5,desc:"+۲۵٪ قدرت ناوگان"},
-{id:"sensor",name:"حسگر زیستی",icon:"🧬",cost:[650,600],max:5,desc:"افزایش دقت کشف حیات"}
-];
-
-
+const BUILDINGS={
+  mine:{name:'معدن فلز',icon:'⛏️',res:'metal',baseProd:0.55,baseCost:{metal:60,crystal:15,energy:0}},
+  crystalx:{name:'استخراج‌کننده کریستال',icon:'💎',res:'crystal',baseProd:0.4,baseCost:{metal:48,crystal:24,energy:0}},
+  power:{name:'نیروگاه انرژی',icon:'⚡',res:'energy',baseProd:0.65,baseCost:{metal:75,crystal:30,energy:0}},
+  storagebld:{name:'انبار مرکزی',icon:'📦',baseCost:{metal:100,crystal:60,energy:0}},
+  shipyard:{name:'اسکلهٔ فضایی',icon:'🛰️',baseCost:{metal:400,crystal:220,energy:100}},
+  lab:{name:'آزمایشگاه تحقیقات',icon:'🔬',baseCost:{metal:220,crystal:420,energy:60}},
+};
+const RESEARCH={
+  mining:{name:'فناوری معدن‌کاری',icon:'⛏️',desc:'افزایش ۵٪ تولید فلز و کریستال در هر سطح',baseCost:{metal:150,crystal:100,energy:40}},
+  energyTech:{name:'فناوری انرژی',icon:'⚡',desc:'افزایش ۵٪ تولید انرژی در هر سطح',baseCost:{metal:120,crystal:150,energy:60}},
+  weapons:{name:'فناوری تسلیحات',icon:'🗡️',desc:'افزایش ۱۰٪ قدرت حمله ناوگان در هر سطح',baseCost:{metal:200,crystal:180,energy:100}},
+  shields:{name:'فناوری سپر',icon:'🛡️',desc:'افزایش ۱۰٪ قدرت دفاع ناوگان در هر سطح',baseCost:{metal:180,crystal:200,energy:100}},
+  drive:{name:'فناوری موتور تاکیونی',icon:'🚀',desc:'کاهش زمان ساخت سفینه‌ها',baseCost:{metal:250,crystal:250,energy:150}},
+};
 const SHIPS={
-scout:{name:"شناسگر",icon:"🛰️",cost:{metal:120,crystal:50,energy:20},power:12},
-fighter:{name:"شکارچی",icon:"🚀",cost:{metal:260,crystal:110,energy:50},power:35},
-cruiser:{name:"ناو سنگین",icon:"🛸",cost:{metal:650,crystal:320,energy:130},power:100},
-carrier:{name:"ناو مادر",icon:"🚢",cost:{metal:1400,crystal:850,energy:350},power:260}
+  scout:{name:'کاوشگر',icon:'🛸',attack:5,defense:2,cost:{metal:500,crystal:200,energy:50}},
+  fighter:{name:'جنگنده',icon:'✈️',attack:20,defense:10,cost:{metal:1500,crystal:600,energy:200}},
+  cruiser:{name:'ناوچه سنگین',icon:'🚁',attack:80,defense:50,cost:{metal:5000,crystal:2500,energy:800}},
+  battleship:{name:'ناو جنگی',icon:'🛰️',attack:250,defense:180,cost:{metal:15000,crystal:8000,energy:3000}},
 };
+const NPC_TIERS=[
+  {name:'اردوگاه دزدان فضایی',icon:'🏴‍☠️',power:[30,90],reward:[300,900],diff:'آسان'},
+  {name:'گشت هوایی کرایل',icon:'👾',power:[150,350],reward:[900,2200],diff:'متوسط'},
+  {name:'ناوگان زورثیایی سرگردان',icon:'🛸',power:[400,800],reward:[2200,5000],diff:'سخت'},
+  {name:'نگهبان باستانی وکس',icon:'🗿',power:[900,1600],reward:[5000,12000],diff:'بسیار سخت'},
+];
+const FACTION_LIST=[
+  {id:'zorath',name:'اتحادیه زورثیا',icon:'🟦'},
+  {id:'kryll',name:'گروه جنگی کریل',icon:'🟥'},
+  {id:'vex',name:'باستانیان وکس',icon:'🟪'},
+  {id:'nomads',name:'کوچ‌نشینان آزاد',icon:'🟨'},
+];
 
-let market={
-metal:4,
-crystal:7,
-energy:5
-};
+/* Hand-crafted SVG art for events (no external image needed) */
+const SVG_UFO_FALLBACK=`<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="100" cy="70" rx="90" ry="18" fill="#2a3568"/>
+<ellipse cx="100" cy="60" rx="55" ry="22" fill="#6ee7ff"/>
+<ellipse cx="100" cy="55" rx="30" ry="16" fill="#dff8ff" opacity=".9"/>
+<circle cx="70" cy="60" r="4" fill="#ffd166"/><circle cx="100" cy="66" r="4" fill="#ff6b81"/><circle cx="130" cy="60" r="4" fill="#5ce6a6"/>
+<line x1="100" y1="88" x2="70" y2="115" stroke="#6ee7ff" stroke-width="2" opacity=".5"/>
+<line x1="100" y1="88" x2="100" y2="118" stroke="#6ee7ff" stroke-width="2" opacity=".5"/>
+<line x1="100" y1="88" x2="130" y2="115" stroke="#6ee7ff" stroke-width="2" opacity=".5"/>
+</svg>`;
+const SVG_PIRATE=`<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 80 L100 40 L180 80 L150 95 L50 95 Z" fill="#3a2540"/>
+<circle cx="100" cy="60" r="16" fill="#ff6b81"/><path d="M85 55 L115 65 M115 55 L85 65" stroke="#fff" stroke-width="3"/>
+<rect x="95" y="20" width="10" height="30" fill="#8891bd"/>
+</svg>`;
+const SVG_METEOR=`<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+<circle cx="130" cy="60" r="26" fill="#9fb4d8"/><circle cx="120" cy="52" r="5" fill="#6b7aa8"/><circle cx="140" cy="68" r="4" fill="#6b7aa8"/>
+<path d="M40 20 L130 60" stroke="#ffd166" stroke-width="3" opacity=".7"/>
+<path d="M30 40 L120 65" stroke="#ff9a6b" stroke-width="2" opacity=".5"/>
+</svg>`;
+const SVG_RELIC=`<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+<rect x="80" y="30" width="40" height="60" fill="#c98bff" opacity=".8" transform="rotate(45 100 60)"/>
+<circle cx="100" cy="60" r="10" fill="#fff" opacity=".9"/>
+</svg>`;
+const SVG_CARAVAN=`<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+<rect x="40" y="50" width="120" height="24" rx="10" fill="#5ce6a6"/>
+<circle cx="60" cy="80" r="8" fill="#333"/><circle cx="140" cy="80" r="8" fill="#333"/>
+<rect x="90" y="35" width="20" height="18" fill="#f5c66b"/>
+</svg>`;
+const SVG_DISTRESS=`<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+<circle cx="100" cy="60" r="30" fill="none" stroke="#ff6b81" stroke-width="4" opacity=".8"/>
+<circle cx="100" cy="60" r="45" fill="none" stroke="#ff6b81" stroke-width="2" opacity=".4"/>
+<text x="100" y="68" font-size="26" text-anchor="middle" fill="#ff6b81">!</text>
+</svg>`;
 
+/* ============================================================
+   STATE
+============================================================ */
+let CURRENT_USER=null;   // username string
+let ACCOUNT=null;        // account object
+let WORLD=null;          // world_state object
+let currentView='home';
+let viewingPlanetId=null;
+let productionInterval=null;
+let saveInterval=null;
+let ufoTimer=null;
+let randomEventTimer=null;
 
-/* =========================
-API
-========================= */
-
-async function api(path,options={}){
-const headers={
-"Content-Type":"application/json",
-...(options.headers||{})
-};
-
-if(token)
-headers.Authorization="Bearer "+token;
-
-const response=await fetch(API+path,{
-...options,
-headers
-});
-
-let data={};
-
-try{
-data=await response.json();
-}catch{}
-
-if(!response.ok)
-throw new Error(data.error||"خطای ارتباط با سرور");
-
-return data;
+/* ============================================================
+   AUTH
+============================================================ */
+let authMode='login';
+function switchTab(mode){
+  authMode=mode;
+  document.getElementById('tabLogin').classList.toggle('active',mode==='login');
+  document.getElementById('tabRegister').classList.toggle('active',mode==='register');
+  document.getElementById('authSubmitBtn').textContent = mode==='login' ? 'ورود به کهکشان' : 'ساخت حساب و پرتاب به فضا';
+  document.getElementById('authMsg').textContent='';
+}
+function setAuthMsg(msg,ok){
+  const el=document.getElementById('authMsg');
+  el.textContent=msg; el.className='auth-msg '+(ok?'ok':'err');
 }
 
-
-/* =========================
-AUTH
-========================= */
-
-function showAuth(){
-
-modal(`
-<div class="center">
-
-<h2>🚀 SPACE EMPIRE</h2>
-
-<p class="muted">
-برای ورود به امپراتوری فضایی آنلاین، حساب خود را بسازید.
-</p>
-
-<div class="field">
-<label>نام فرمانده</label>
-<input id="username" maxlength="24" autocomplete="username">
-</div>
-
-<div class="field">
-<label>رمز عبور</label>
-<input id="password" type="password" minlength="6" autocomplete="current-password">
-</div>
-
-<div class="actions">
-
-<button class="primary" onclick="login()">
-ورود
-</button>
-
-<button onclick="register()">
-ساخت حساب
-</button>
-
-</div>
-
-<p class="small">
-حداقل ۶ کاراکتر برای رمز عبور.
-</p>
-
-</div>
-`);
-
+async function ensureWorld(){
+  let w = await sGet('world_state', true);
+  if(!w){
+    const planets=[];
+    for(let i=0;i<NUM_PLANETS;i++){
+      const type=PLANET_TYPES[Math.floor(Math.random()*PLANET_TYPES.length)];
+      planets.push({
+        id:i,
+        name:PLANET_NAMES[i]||('سیاره '+i),
+        type:type.k, typeName:type.n, typeIcon:type.e,
+        danger:1+Math.floor(Math.random()*5),
+        mult:{
+          metal:+(0.8+Math.random()*0.8).toFixed(2),
+          crystal:+(0.8+Math.random()*0.8).toFixed(2),
+          energy:+(0.8+Math.random()*0.8).toFixed(2)
+        },
+        players:[] // {username,x,y}
+      });
+    }
+    const factions={};
+    FACTION_LIST.forEach(f=>factions[f.id]={relation:Math.floor(Math.random()*60-10)});
+    w={planets,factions,log:[]};
+    await sSet('world_state', w, true);
+  }
+  return w;
 }
 
-
-async function register(){
-
-const username=$("#username").value.trim();
-const password=$("#password").value;
-
-try{
-
-const data=await api("/api/register",{
-method:"POST",
-body:JSON.stringify({
-username,
-password
-})
-});
-
-token=data.token;
-
-localStorage.setItem("SPACE_EMPIRE_TOKEN",token);
-
-closeModal();
-
-await boot();
-
-}catch(e){
-
-toast(e.message);
-
+function pickPlanetForNewPlayer(world){
+  let under = world.planets.filter(p=>p.players.length < MIN_PLAYERS_PER_PLANET);
+  let pool = under.length ? under : world.planets;
+  pool = pool.slice().sort((a,b)=>a.players.length-b.players.length);
+  return pool[0];
+}
+function freeCellOnPlanet(planet){
+  for(let tries=0; tries<40; tries++){
+    const x=Math.floor(Math.random()*GRID_SIZE), y=Math.floor(Math.random()*GRID_SIZE);
+    if(!planet.players.some(p=>p.x===x&&p.y===y)) return {x,y};
+  }
+  return {x:Math.floor(Math.random()*GRID_SIZE),y:Math.floor(Math.random()*GRID_SIZE)};
 }
 
+async function handleAuthSubmit(){
+  const uRaw=document.getElementById('authUser').value.trim();
+  const pass=document.getElementById('authPass').value;
+  if(!uRaw || !pass){ setAuthMsg('نام کاربری و رمز عبور را وارد کن.'); return; }
+  if(uRaw.length<3){ setAuthMsg('نام کاربری باید حداقل ۳ کاراکتر باشد.'); return; }
+  const uKey = uRaw.toLowerCase();
+  setAuthMsg('در حال اتصال به کهکشان...', true);
+
+  if(authMode==='register'){
+    const existing = await sGet('account_'+uKey, true);
+    if(existing){ setAuthMsg('این نام کاربری قبلاً گرفته شده. وارد شو یا نام دیگری انتخاب کن.'); return; }
+    let world = await ensureWorld();
+    const planet = pickPlanetForNewPlayer(world);
+    const cell = freeCellOnPlanet(planet);
+    planet.players.push({username:uRaw, x:cell.x, y:cell.y});
+    await sSet('world_state', world, true);
+
+    const acc={
+      username:uRaw, password:pass, planetId:planet.id, x:cell.x, y:cell.y,
+      resources:{metal:500,crystal:300,energy:200},
+      storageCap:1500,
+      buildings:{mine:1,crystalx:1,power:1,storagebld:1,shipyard:0,lab:0},
+      research:{mining:0,energyTech:0,weapons:0,shields:0,drive:0},
+      fleet:{scout:0,fighter:0,cruiser:0,battleship:0},
+      lastTick: Date.now(),
+      createdAt: Date.now(),
+    };
+    await sSet('account_'+uKey, acc, true);
+    let list = await sGet('usernames_list', true) || [];
+    list.push(uRaw); await sSet('usernames_list', list, true);
+
+    setAuthMsg('حساب ساخته شد! در حال فرود روی '+planet.name+' ...', true);
+    setTimeout(()=>enterGame(acc, uKey, world), 600);
+  } else {
+    const acc = await sGet('account_'+uKey, true);
+    if(!acc || acc.password !== pass){ setAuthMsg('نام کاربری یا رمز عبور اشتباه است.'); return; }
+    let world = await ensureWorld();
+    setAuthMsg('در حال ورود...', true);
+    setTimeout(()=>enterGame(acc, uKey, world), 400);
+  }
 }
 
-
-async function login(){
-
-const username=$("#username").value.trim();
-const password=$("#password").value;
-
-try{
-
-const data=await api("/api/login",{
-method:"POST",
-body:JSON.stringify({
-username,
-password
-})
-});
-
-token=data.token;
-
-localStorage.setItem("SPACE_EMPIRE_TOKEN",token);
-
-closeModal();
-
-await boot();
-
-}catch(e){
-
-toast(e.message);
-
+function logout(){
+  clearInterval(productionInterval); clearInterval(saveInterval);
+  clearTimeout(ufoTimer); clearTimeout(randomEventTimer);
+  CURRENT_USER=null; ACCOUNT=null;
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('authUser').value=''; document.getElementById('authPass').value='';
+  setAuthMsg('');
 }
 
+/* ============================================================
+   ENTER GAME / PRODUCTION LOOP
+============================================================ */
+async function enterGame(acc, uKey, world){
+  CURRENT_USER=uKey; ACCOUNT=acc; WORLD=world;
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  document.getElementById('hudUser').textContent='👤 '+acc.username+' · '+ (WORLD.planets[acc.planetId]?.name||'');
+
+  applyOfflineProduction();
+  showView('home');
+  productionInterval=setInterval(tickProduction, 1000);
+  saveInterval=setInterval(saveAccount, 20000);
+
+  ufoTimer=setTimeout(triggerUfoEvent, 60000);
+  scheduleRandomEvent();
 }
 
+function prodRates(){
+  const acc=ACCOUNT; const planet=WORLD.planets[acc.planetId];
+  const miningBonus = 1 + acc.research.mining*0.05;
+  const energyBonus = 1 + acc.research.energyTech*0.05;
+  return {
+    metal: BUILDINGS.mine.baseProd * acc.buildings.mine * planet.mult.metal * miningBonus,
+    crystal: BUILDINGS.crystalx.baseProd * acc.buildings.crystalx * planet.mult.crystal * miningBonus,
+    energy: BUILDINGS.power.baseProd * acc.buildings.power * planet.mult.energy * energyBonus,
+  };
+}
+function storageCap(){ return 1500 + ACCOUNT.buildings.storagebld*800; }
 
-async function boot(){
-
-try{
-
-const data=await api("/api/me");
-
-ME=data.user;
-G=data.state;
-
-$("#playerName").textContent=ME.username;
-$("#planetNameTop").textContent=G.planetName;
-
-renderAll();
-
-startPresence();
-
-setTimeout(ufoEvent,60000);
-
-}catch(e){
-
-localStorage.removeItem("SPACE_EMPIRE_TOKEN");
-token=null;
-
-showAuth();
-
+function tickProduction(){
+  const r=prodRates();
+  const cap=storageCap();
+  ACCOUNT.resources.metal=Math.min(cap, ACCOUNT.resources.metal + r.metal);
+  ACCOUNT.resources.crystal=Math.min(cap, ACCOUNT.resources.crystal + r.crystal);
+  ACCOUNT.resources.energy=Math.min(cap, ACCOUNT.resources.energy + r.energy);
+  ACCOUNT.lastTick=Date.now();
+  updateHud();
+  if(currentView==='home' || currentView==='build') renderCurrentView();
+}
+function applyOfflineProduction(){
+  const elapsedSec = Math.min(6*3600, Math.max(0,(Date.now()-(ACCOUNT.lastTick||Date.now()))/1000));
+  if(elapsedSec>2){
+    const r=prodRates(); const cap=storageCap();
+    ACCOUNT.resources.metal=Math.min(cap, ACCOUNT.resources.metal + r.metal*elapsedSec);
+    ACCOUNT.resources.crystal=Math.min(cap, ACCOUNT.resources.crystal + r.crystal*elapsedSec);
+    ACCOUNT.resources.energy=Math.min(cap, ACCOUNT.resources.energy + r.energy*elapsedSec);
+    ACCOUNT.lastTick=Date.now();
+    if(elapsedSec>60) showToast('⏱️ در غیاب شما، پایگاهتان '+Math.floor(elapsedSec/60)+' دقیقه تولید منابع داشت.');
+  }
+}
+async function saveAccount(){
+  if(!CURRENT_USER || !ACCOUNT) return;
+  await sSet('account_'+CURRENT_USER, ACCOUNT, true);
+}
+function updateHud(){
+  document.getElementById('hudMetal').textContent=Math.floor(ACCOUNT.resources.metal).toLocaleString('fa-IR');
+  document.getElementById('hudCrystal').textContent=Math.floor(ACCOUNT.resources.crystal).toLocaleString('fa-IR');
+  document.getElementById('hudEnergy').textContent=Math.floor(ACCOUNT.resources.energy).toLocaleString('fa-IR');
 }
 
+/* ============================================================
+   VIEW ROUTER
+============================================================ */
+function showView(name){
+  currentView=name;
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.v===name));
+  document.querySelectorAll('#mainArea > div').forEach(d=>d.classList.add('hidden'));
+  document.getElementById('view-'+name).classList.remove('hidden');
+  renderCurrentView();
+}
+function renderCurrentView(){
+  const map={
+    home:renderHome, galaxy:renderGalaxy, build:renderBuild, research:renderResearch,
+    fleet:renderFleet, war:renderWar, market:renderMarket, aliens:renderAliens
+  };
+  map[currentView] && map[currentView]();
 }
 
-
-async function logout(){
-
-try{
-await api("/api/logout",{method:"POST"});
-}catch{}
-
-localStorage.removeItem("SPACE_EMPIRE_TOKEN");
-
-token=null;
-ME=null;
-G=null;
-
-showAuth();
-
+/* ---------- HOME (own planet map) ---------- */
+function renderHome(){
+  const el=document.getElementById('view-home');
+  const planet=WORLD.planets[ACCOUNT.planetId];
+  const r=prodRates();
+  el.innerHTML=`
+    <div class="card">
+      <div class="section-title">${planet.typeIcon} ${planet.name} <span class="tag-pill">سطح خطر ${planet.danger}/5</span></div>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">نوع سیاره: ${planet.typeName} · جمعیت پایگاه‌های ساکن: ${planet.players.length} نفر</div>
+      <div id="planetMapWrap"><div id="planetGrid"></div></div>
+    </div>
+    <div class="card">
+      <div class="section-title">📈 نرخ تولید منابع (در ثانیه)</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;">
+        <div>⛏️ فلز: <b>${r.metal.toFixed(2)}</b></div>
+        <div>💎 کریستال: <b>${r.crystal.toFixed(2)}</b></div>
+        <div>⚡ انرژی: <b>${r.energy.toFixed(2)}</b></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:8px;">ظرفیت انبار: ${storageCap().toLocaleString('fa-IR')} از هر منبع</div>
+    </div>
+  `;
+  const grid=document.getElementById('planetGrid');
+  grid.innerHTML='';
+  const cellMap={};
+  planet.players.forEach(p=>{ cellMap[p.x+'_'+p.y]=p; });
+  for(let y=0;y<GRID_SIZE;y++){
+    for(let x=0;x<GRID_SIZE;x++){
+      const p=cellMap[x+'_'+y];
+      const div=document.createElement('div');
+      div.className='cell';
+      if(p){
+        const mine = p.username.toLowerCase()===CURRENT_USER;
+        div.classList.add(mine?'mine':'other');
+        div.innerHTML=(mine?'🏰':'🏠')+`<span class="tag">${p.username}</span>`;
+      }
+      grid.appendChild(div);
+    }
+  }
 }
 
-
-/* =========================
-GAME
-========================= */
-
-function production(){
-
-const b=G.buildings;
-const r=G.research;
-
-return{
-metal:(9+b.mine*8)*(1+r.mining*.15),
-crystal:(5+b.crystal*6)*(1+r.mining*.08),
-energy:(6+b.reactor*8)*(1+r.reactor*.2)
-};
-
+/* ---------- GALAXY (30 planets overview) ---------- */
+function renderGalaxy(){
+  const el=document.getElementById('view-galaxy');
+  el.innerHTML=`<div class="card"><div class="section-title">🗺️ نقشهٔ کهکشان — ۳۰ سیاره</div>
+  <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">روی هر سیاره بزن تا نقشه و اطلاعاتش را ببینی و آن را اسکن کنی.</div>
+  <div id="galaxyGrid"></div></div>
+  <div class="card hidden" id="planetDetailCard"></div>`;
+  const grid=document.getElementById('galaxyGrid');
+  WORLD.planets.forEach(p=>{
+    const tile=document.createElement('div');
+    tile.className='planet-tile'+(p.id===ACCOUNT.planetId?' home':'');
+    const dangerColor=['#5ce6a6','#5ce6a6','#f5c66b','#ff9a6b','#ff6b81','#ff2d55'][p.danger]||'#f5c66b';
+    tile.innerHTML=`<div class="danger-dot" style="background:${dangerColor}"></div>
+      <span class="planet-emoji">${p.typeIcon}</span>
+      <div class="planet-name">${p.name}</div>
+      <div class="planet-pop">👥 ${p.players.length}</div>`;
+    tile.onclick=()=>showPlanetDetail(p.id);
+    grid.appendChild(tile);
+  });
+}
+function showPlanetDetail(id){
+  const p=WORLD.planets[id];
+  const card=document.getElementById('planetDetailCard');
+  card.classList.remove('hidden');
+  card.innerHTML=`
+    <div class="section-title">${p.typeIcon} ${p.name}</div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">نوع: ${p.typeName} · خطر: ${p.danger}/5 · جمعیت: ${p.players.length} پایگاه</div>
+    <div id="planetGrid2" style="display:grid;grid-template-columns:repeat(8,32px);grid-template-rows:repeat(8,32px);gap:2px;width:max-content;margin:0 auto 12px;"></div>
+    <button class="mini-btn" onclick="scanPlanet(${id})">🔭 اسکن سیاره (۳۰ انرژی)</button>
+    <div class="scan-result hidden" id="scanResult"></div>
+  `;
+  const g=document.getElementById('planetGrid2');
+  const cellMap={}; p.players.forEach(pl=>cellMap[pl.x+'_'+pl.y]=pl);
+  for(let y=0;y<GRID_SIZE;y++) for(let x=0;x<GRID_SIZE;x++){
+    const d=document.createElement('div');
+    d.style.cssText='background:rgba(255,255,255,.04);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid rgba(255,255,255,.06);';
+    if(cellMap[x+'_'+y]) d.textContent='🏠';
+    g.appendChild(d);
+  }
+}
+async function scanPlanet(id){
+  if(ACCOUNT.resources.energy<30){ showToast('⚡ انرژی کافی برای اسکن نداری.'); return; }
+  ACCOUNT.resources.energy-=30; updateHud(); saveAccount();
+  const resultEl=document.getElementById('scanResult');
+  resultEl.classList.remove('hidden');
+  resultEl.innerHTML='<span class="loading-spin"></span> در حال اسکن سیگنال‌های سیاره...';
+  await new Promise(r=>setTimeout(r,1600));
+  const p=WORLD.planets[id];
+  const found = Math.random()<0.25;
+  let extra='';
+  if(found){
+    const bonus=Math.floor(200+Math.random()*500);
+    const resType=['metal','crystal','energy'][Math.floor(Math.random()*3)];
+    ACCOUNT.resources[resType]=Math.min(storageCap(), ACCOUNT.resources[resType]+bonus);
+    updateHud(); saveAccount();
+    extra=`<br>🎁 محموله رهاشدهٔ فضایی پیدا شد! +${bonus} ${resType==='metal'?'فلز':resType==='crystal'?'کریستال':'انرژی'}`;
+  }
+  resultEl.innerHTML=`✅ اسکن کامل شد.<br>ترکیب منابع: فلز×${p.mult.metal} · کریستال×${p.mult.crystal} · انرژی×${p.mult.energy}<br>سطح خطر: ${p.danger}/5${extra}`;
 }
 
-
-function addLog(text){
-
-G.logs.unshift(
-`چرخه ${G.turn} · ${text}`
-);
-
-G.logs=G.logs.slice(0,30);
-
-}
-
-
-function can(cost){
-
-return Object.entries(cost).every(
-([k,v])=>(G.res[k]||0)>=v
-);
-
-}
-
-
-function pay(cost){
-
-for(const[k,v]of Object.entries(cost))
-G.res[k]-=v;
-
-}
-
-
-function costText(c){
-
-return Object.entries(c)
-.map(([k,v])=>
-`${fmt(v)} ${k==="metal"?"فلز":k==="crystal"?"کریستال":"انرژی"}`
-)
-.join(" · ");
-
-}
-
-
-/* =========================
-RENDER
-========================= */
-
-function renderResources(){
-
-const r=G.res;
-
-$("#resources").innerHTML=`
-
-<div class="res">⛓️ <b>${fmt(r.metal)}</b></div>
-
-<div class="res">💎 <b>${fmt(r.crystal)}</b></div>
-
-<div class="res">⚡ <b>${fmt(r.energy)}</b></div>
-
-<div class="res">💰 <b>${fmt(r.credits)}</b></div>
-
-`;
-
-}
-
-
-function renderDashboard(){
-
-const p=production();
-
-$("#dashStats").innerHTML=[
-
-["⛓️","فلز / چرخه",p.metal],
-["💎","کریستال / چرخه",p.crystal],
-["⚡","انرژی / چرخه",p.energy],
-["🏆","امتیاز",G.score]
-
-].map(x=>`
-
-<div class="card">
-
-<div class="small">
-${x[0]} ${x[1]}
-</div>
-
-<div class="big">
-${fmt(x[2])}
-</div>
-
-</div>
-
-`).join("");
-
-$("#log").innerHTML=
-G.logs.map(x=>`<div>${x}</div>`).join("");
-
-loadPlayers();
-
-}
-
-
-async function loadPlayers(){
-
-try{
-
-const data=await api("/api/planet/players");
-
-$("#onlineCount").textContent=
-data.players.filter(x=>x.online).length;
-
-$("#playerList").innerHTML=
-data.players.map(p=>`
-
-<div class="item">
-
-<span>
-👤 ${escapeHTML(p.username)}
-${p.online?
-`<span class="good">●</span>`:
-`<span class="danger">●</span>`
-}
-</span>
-
-<span class="tag">
-X:${p.baseX} · Y:${p.baseY}
-</span>
-
-</div>
-
-`).join("");
-
-drawSurface();
-
-}catch{}
-
-}
-
-
-function renderPlanet(){
-
-const p=PLANETS[G.planetId];
-
-$("#planetTitle").textContent=
-"🪐 "+p.name;
-
-$("#planetDesc").textContent=
-`${p.type} · دما ${p.temperature}°C · گرانش ${p.gravity}G · آب ${p.water}% · خطر ${p.danger}%`;
-
-$("#planetStats").innerHTML=[
-
-["🌡️","دما",p.temperature+"°C"],
-["🪨","گرانش",p.gravity+"G"],
-["💧","آب",p.water+"%"],
-["☣️","خطر",p.danger+"%"]
-
-].map(x=>`
-
-<div class="card">
-
-<div class="small">${x[0]} ${x[1]}</div>
-
-<div class="big">${x[2]}</div>
-
-</div>
-
-`).join("");
-
-$("#bases").innerHTML=`
-
-<div class="item">
-
-<span>🏠 پایگاه شما</span>
-
-<span class="tag">
-X:${G.baseX} · Y:${G.baseY}
-</span>
-
-</div>
-
-`;
-
-$("#scanner").innerHTML=`
-
-<div class="item">
-<span>📡 رادار مداری</span>
-<b>سطح ${G.buildings.radar}</b>
-</div>
-
-<div class="item">
-<span>🧬 حسگر زیستی</span>
-<b>سطح ${G.research.sensor}</b>
-</div>
-
-<div class="item">
-<span>🛰️ شناسگرها</span>
-<b>${G.fleet.scout}</b>
-</div>
-
-<div class="item">
-<span>🔭 برد اسکن</span>
-<b>${100+G.buildings.radar*25} AU</b>
-</div>
-
-`;
-
-drawSurface();
-
-}
-
-
+/* ---------- BUILD ---------- */
 function renderBuild(){
-
-$("#buildList").innerHTML=
-BUILDINGS.map(b=>{
-
-const level=G.buildings[b.id]||0;
-
-const cost={
-metal:b.cost[0]*Math.max(level,1),
-crystal:b.cost[1]*Math.max(level,1)
-};
-
-return`
-
-<div class="card">
-
-<h3>
-${b.icon} ${b.name}
-</h3>
-
-<div class="small">
-${b.desc}
-</div>
-
-<p>
-سطح <b>${level}</b>
-</p>
-
-<div class="tag">
-${fmt(cost.metal)} فلز ·
-${fmt(cost.crystal)} کریستال
-</div>
-
-<br>
-
-<button
-class="primary"
-style="margin-top:10px"
-onclick="build('${b.id}')">
-ارتقا
-</button>
-
-</div>
-
-`;
-
-}).join("");
-
+  const el=document.getElementById('view-build');
+  let html=`<div class="section-title">🏭 ساخت‌وساز پایگاه</div>`;
+  Object.entries(BUILDINGS).forEach(([key,b])=>{
+    const lvl=ACCOUNT.buildings[key]||0;
+    const cost=buildingCost(key,lvl);
+    const canAfford=canPay(cost);
+    html+=`<div class="item-row">
+      <div class="item-icon">${b.icon}</div>
+      <div class="item-info">
+        <div class="item-title">${b.name} <span class="tag-pill">سطح ${lvl}</span></div>
+        <div class="item-sub">${b.res?('تولید فعلی: '+ (BUILDINGS[key].baseProd*lvl).toFixed(2)+' در ثانیه'):(key==='storagebld'?'ظرفیت انبار +۸۰۰ در هر سطح':key==='shipyard'?'برای ساخت سفینه لازم است':'برای پژوهش لازم است')}</div>
+        <div class="item-cost">${costChips(cost)}</div>
+      </div>
+      <button class="mini-btn" ${canAfford?'':'disabled'} onclick="upgradeBuilding('${key}')">ارتقا</button>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+function buildingCost(key,lvl){
+  const b=BUILDINGS[key].baseCost;
+  const f=Math.pow(1.55,lvl);
+  return {metal:Math.round(b.metal*f), crystal:Math.round(b.crystal*f), energy:Math.round(b.energy*f)};
+}
+function canPay(cost){
+  return ACCOUNT.resources.metal>=cost.metal && ACCOUNT.resources.crystal>=cost.crystal && ACCOUNT.resources.energy>=cost.energy;
+}
+function costChips(cost){
+  let s='';
+  if(cost.metal) s+=`<span class="cost-chip ${ACCOUNT.resources.metal>=cost.metal?'afford':'short'}">⛏️ ${cost.metal.toLocaleString('fa-IR')}</span>`;
+  if(cost.crystal) s+=`<span class="cost-chip ${ACCOUNT.resources.crystal>=cost.crystal?'afford':'short'}">💎 ${cost.crystal.toLocaleString('fa-IR')}</span>`;
+  if(cost.energy) s+=`<span class="cost-chip ${ACCOUNT.resources.energy>=cost.energy?'afford':'short'}">⚡ ${cost.energy.toLocaleString('fa-IR')}</span>`;
+  return s;
+}
+function upgradeBuilding(key){
+  const lvl=ACCOUNT.buildings[key]||0;
+  const cost=buildingCost(key,lvl);
+  if(!canPay(cost)) return;
+  ACCOUNT.resources.metal-=cost.metal; ACCOUNT.resources.crystal-=cost.crystal; ACCOUNT.resources.energy-=cost.energy;
+  ACCOUNT.buildings[key]=lvl+1;
+  updateHud(); saveAccount(); renderBuild();
+  showToast(`🏗️ ${BUILDINGS[key].name} به سطح ${lvl+1} ارتقا یافت.`);
 }
 
-
-async function build(id){
-
-const b=BUILDINGS.find(x=>x.id===id);
-
-const level=G.buildings[id]||0;
-
-const cost={
-metal:b.cost[0]*Math.max(level,1),
-crystal:b.cost[1]*Math.max(level,1)
-};
-
-if(!can(cost))
-return toast("منابع کافی نیست.");
-
-pay(cost);
-
-G.buildings[id]=level+1;
-
-G.score+=25;
-
-addLog(`${b.name} به سطح ${level+1} رسید.`);
-
-renderAll();
-
-await saveState();
-
-}
-
-
+/* ---------- RESEARCH ---------- */
 function renderResearch(){
-
-$("#researchList").innerHTML=
-RESEARCH.map(r=>{
-
-const level=G.research[r.id]||0;
-
-const cost={
-metal:r.cost[0]*(level+1),
-crystal:r.cost[1]*(level+1)
-};
-
-return`
-
-<div class="card">
-
-<h3>
-${r.icon} ${r.name}
-</h3>
-
-<div class="small">
-${r.desc}
-</div>
-
-<p>
-سطح <b>${level}/${r.max}</b>
-</p>
-
-<div class="progress">
-<div class="bar"
-style="width:${level/r.max*100}%">
-</div>
-</div>
-
-${
-level<r.max?
-
-`
-
-<div class="tag">
-${fmt(cost.metal)} فلز ·
-${fmt(cost.crystal)} کریستال
-</div>
-
-<br>
-
-<button
-class="primary"
-style="margin-top:10px"
-onclick="research('${r.id}')">
-تحقیق
-</button>
-
-`
-
-:
-
-`<span class="good">حداکثر سطح</span>`
-
+  const el=document.getElementById('view-research');
+  if((ACCOUNT.buildings.lab||0)<1){
+    el.innerHTML=`<div class="card"><div class="section-title">🔬 تحقیقات</div><div style="font-size:13px;color:var(--text-dim);">برای شروع پژوهش، ابتدا آزمایشگاه تحقیقات را در بخش «ساخت» بساز.</div></div>`;
+    return;
+  }
+  let html=`<div class="section-title">🔬 درخت تحقیقات</div>`;
+  Object.entries(RESEARCH).forEach(([key,r])=>{
+    const lvl=ACCOUNT.research[key]||0;
+    const cost={metal:Math.round(r.baseCost.metal*Math.pow(1.6,lvl)),crystal:Math.round(r.baseCost.crystal*Math.pow(1.6,lvl)),energy:Math.round(r.baseCost.energy*Math.pow(1.6,lvl))};
+    const canAfford=canPay(cost);
+    html+=`<div class="item-row">
+      <div class="item-icon">${r.icon}</div>
+      <div class="item-info">
+        <div class="item-title">${r.name} <span class="tag-pill">سطح ${lvl}</span></div>
+        <div class="item-sub">${r.desc}</div>
+        <div class="item-cost">${costChips(cost)}</div>
+      </div>
+      <button class="mini-btn alt" ${canAfford?'':'disabled'} onclick="upgradeResearch('${key}')">پژوهش</button>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+function upgradeResearch(key){
+  const lvl=ACCOUNT.research[key]||0;
+  const r=RESEARCH[key];
+  const cost={metal:Math.round(r.baseCost.metal*Math.pow(1.6,lvl)),crystal:Math.round(r.baseCost.crystal*Math.pow(1.6,lvl)),energy:Math.round(r.baseCost.energy*Math.pow(1.6,lvl))};
+  if(!canPay(cost)) return;
+  ACCOUNT.resources.metal-=cost.metal; ACCOUNT.resources.crystal-=cost.crystal; ACCOUNT.resources.energy-=cost.energy;
+  ACCOUNT.research[key]=lvl+1;
+  updateHud(); saveAccount(); renderResearch();
+  showToast(`🔬 ${r.name} به سطح ${lvl+1} رسید.`);
 }
 
-</div>
-
-`;
-
-}).join("");
-
-}
-
-
-async function research(id){
-
-const r=RESEARCH.find(x=>x.id===id);
-
-const level=G.research[id]||0;
-
-if(level>=r.max)
-return;
-
-const cost={
-metal:r.cost[0]*(level+1),
-crystal:r.cost[1]*(level+1)
-};
-
-if(!can(cost))
-return toast("منابع کافی نیست.");
-
-pay(cost);
-
-G.research[id]=level+1;
-
-G.score+=60;
-
-addLog(
-`${r.name} به سطح ${level+1} رسید.`
-);
-
-renderAll();
-
-await saveState();
-
-}
-
-
-function fleetPower(){
-
-let power=0;
-
-for(const[id,n]of Object.entries(G.fleet))
-power+=n*SHIPS[id].power;
-
-return power*(1+G.research.weapons*.25);
-
-}
-
-
+/* ---------- FLEET ---------- */
 function renderFleet(){
-
-$("#fleetList").innerHTML=
-
-Object.entries(SHIPS).map(([id,s])=>`
-
-<div class="card">
-
-<h3>
-${s.icon} ${s.name}
-</h3>
-
-<div class="small">
-قدرت رزمی: ${s.power}
-</div>
-
-<p>
-تعداد:
-<b>${G.fleet[id]}</b>
-</p>
-
-<div class="tag">
-${costText(s.cost)}
-</div>
-
-<br>
-
-<button
-style="margin-top:10px"
-onclick="buildShip('${id}')">
-ساخت
-</button>
-
-</div>
-
-`).join("")+
-
-`
-
-<div class="card">
-
-<h3>⚡ قدرت ناوگان</h3>
-
-<div class="big">
-${fmt(fleetPower())}
-</div>
-
-</div>
-
-`;
-
+  const el=document.getElementById('view-fleet');
+  if((ACCOUNT.buildings.shipyard||0)<1){
+    el.innerHTML=`<div class="card"><div class="section-title">🛰️ ناوگان</div><div style="font-size:13px;color:var(--text-dim);">برای ساخت سفینه، ابتدا اسکلهٔ فضایی را در بخش «ساخت» بساز.</div></div>`;
+    return;
+  }
+  let html=`<div class="section-title">🛰️ ساخت و مدیریت ناوگان</div>`;
+  Object.entries(SHIPS).forEach(([key,s])=>{
+    const count=ACCOUNT.fleet[key]||0;
+    const canAfford=canPay(s.cost);
+    html+=`<div class="item-row">
+      <div class="item-icon">${s.icon}</div>
+      <div class="item-info">
+        <div class="item-title">${s.name} <span class="tag-pill">تعداد: ${count}</span></div>
+        <div class="item-sub">⚔️ حمله ${s.attack} · 🛡️ دفاع ${s.defense}</div>
+        <div class="item-cost">${costChips(s.cost)}</div>
+      </div>
+      <button class="mini-btn" ${canAfford?'':'disabled'} onclick="buildShip('${key}')">ساخت</button>
+    </div>`;
+  });
+  const total=fleetPower();
+  html+=`<div class="card"><div class="section-title">📊 قدرت کل ناوگان</div><div style="font-size:13px;">⚔️ حمله: ${total.attack.toFixed(0)} &nbsp; 🛡️ دفاع: ${total.defense.toFixed(0)}</div></div>`;
+  el.innerHTML=html;
+}
+function fleetPower(){
+  const weaponsBonus=1+ACCOUNT.research.weapons*0.1;
+  const shieldsBonus=1+ACCOUNT.research.shields*0.1;
+  let attack=0, defense=0;
+  Object.entries(SHIPS).forEach(([key,s])=>{
+    const c=ACCOUNT.fleet[key]||0;
+    attack+=c*s.attack; defense+=c*s.defense;
+  });
+  return {attack:attack*weaponsBonus, defense:defense*shieldsBonus};
+}
+function buildShip(key){
+  const s=SHIPS[key];
+  if(!canPay(s.cost)) return;
+  ACCOUNT.resources.metal-=s.cost.metal; ACCOUNT.resources.crystal-=s.cost.crystal; ACCOUNT.resources.energy-=s.cost.energy;
+  ACCOUNT.fleet[key]=(ACCOUNT.fleet[key]||0)+1;
+  updateHud(); saveAccount(); renderFleet();
+  showToast(`🛰️ یک ${s.name} به ناوگان اضافه شد.`);
 }
 
-
-async function buildShip(id){
-
-const s=SHIPS[id];
-
-if(id==="cruiser"&&G.buildings.shipyard<2)
-return toast("کارخانه کشتی‌سازی سطح ۲ لازم است.");
-
-if(id==="carrier"&&G.buildings.shipyard<4)
-return toast("کارخانه کشتی‌سازی سطح ۴ لازم است.");
-
-if(!can(s.cost))
-return toast("منابع کافی نیست.");
-
-pay(s.cost);
-
-G.fleet[id]++;
-
-G.score+=10;
-
-addLog(`${s.name} ساخته شد.`);
-
-renderAll();
-
-await saveState();
-
+/* ---------- WAR ---------- */
+let currentTargets=[];
+function renderWar(){
+  const el=document.getElementById('view-war');
+  if(currentTargets.length===0) regenerateTargets();
+  const myPower=fleetPower();
+  let html=`<div class="section-title">⚔️ اهداف نظامی در این ناحیه</div>
+  <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">قدرت ناوگان شما: ⚔️ ${myPower.attack.toFixed(0)} / 🛡️ ${myPower.defense.toFixed(0)}</div>`;
+  currentTargets.forEach((t,i)=>{
+    html+=`<div class="item-row">
+      <div class="item-icon">${t.icon}</div>
+      <div class="item-info">
+        <div class="item-title">${t.name} <span class="tag-pill">${t.diff}</span></div>
+        <div class="item-sub">قدرت تخمینی دشمن: ${t.power} · جایزه احتمالی: ${t.reward} منابع</div>
+      </div>
+      <button class="mini-btn war" onclick="attackTarget(${i})">حمله</button>
+    </div>`;
+  });
+  html+=`<button class="mini-btn alt" onclick="regenerateTargets();renderWar();" style="margin-top:6px;">🔄 اسکن اهداف جدید</button>`;
+  el.innerHTML=html;
+}
+function regenerateTargets(){
+  currentTargets=Array.from({length:4},()=>{
+    const tier=NPC_TIERS[Math.floor(Math.random()*NPC_TIERS.length)];
+    const power=Math.floor(tier.power[0]+Math.random()*(tier.power[1]-tier.power[0]));
+    const reward=Math.floor(tier.reward[0]+Math.random()*(tier.reward[1]-tier.reward[0]));
+    return {name:tier.name, icon:tier.icon, diff:tier.diff, power, reward};
+  });
+}
+function attackTarget(i){
+  const t=currentTargets[i];
+  const my=fleetPower();
+  const myTotal=my.attack+my.defense*0.5;
+  if(myTotal<5){ showToast('⚠️ ابتدا ناوگانی بساز، سفینه‌ای نداری!'); return; }
+  const winChance = myTotal/(myTotal+t.power);
+  const win = Math.random()<winChance;
+  if(win){
+    const resType=['metal','crystal','energy'][Math.floor(Math.random()*3)];
+    ACCOUNT.resources[resType]=Math.min(storageCap(), ACCOUNT.resources[resType]+t.reward);
+    updateHud(); saveAccount();
+    showToast(`🏆 پیروزی بر ${t.name}! +${t.reward} ${resType==='metal'?'فلز':resType==='crystal'?'کریستال':'انرژی'}`);
+  } else {
+    const shipKeys=Object.keys(SHIPS).filter(k=>(ACCOUNT.fleet[k]||0)>0);
+    if(shipKeys.length){
+      const lost=shipKeys[Math.floor(Math.random()*shipKeys.length)];
+      ACCOUNT.fleet[lost]=Math.max(0,(ACCOUNT.fleet[lost]||0)-1);
+      saveAccount();
+      showToast(`💥 شکست در برابر ${t.name}. یک ${SHIPS[lost].name} از دست رفت.`);
+    } else {
+      showToast(`💥 شکست در برابر ${t.name}.`);
+    }
+  }
+  currentTargets.splice(i,1);
+  renderWar();
 }
 
-
-function renderColonies(){
-
-$("#colonyList").innerHTML=
-PLANETS.map((p,i)=>`
-
-<div class="card planet">
-
-<div
-class="dot"
-style="background:${p.color}">
-</div>
-
-<h3>
-🪐 ${p.name}
-</h3>
-
-<div class="small">
-${p.type}
-</div>
-
-<p>
-🌡️ ${p.temperature}°C<br>
-🪨 ${p.gravity}G<br>
-💧 آب ${p.water}%<br>
-☣️ خطر ${p.danger}%
-</p>
-
-<span class="tag">
-${i===G.planetId?
-"سیاره شما":
-"قابل شناسایی"}
-</span>
-
-<br><br>
-
-<button
-onclick="selectPlanet(${i})">
-${i===G.planetId?
-"نمایش نقشه":
-"اسکن سیاره"}
-</button>
-
-</div>
-
-`).join("");
-
-}
-
-
-function selectPlanet(i){
-
-if(!G.discovered.includes(i))
-G.discovered.push(i);
-
-addLog(
-`سیاره ${PLANETS[i].name} شناسایی شد.`
-);
-
-toast(
-`${PLANETS[i].name} شناسایی شد.`
-);
-
-renderAll();
-
-saveState();
-
-}
-
-
+/* ---------- MARKET ---------- */
 function renderMarket(){
-
-$("#marketTable").innerHTML=
-Object.entries(market).map(([k,v])=>`
-
-<tr>
-
-<td>
-${k==="metal"?"⛓️":
-k==="crystal"?"💎":"⚡"}
-${k}
-</td>
-
-<td>
-${v} اعتبار
-</td>
-
-<td>
-${fmt(G.res[k])}
-</td>
-
-<td>
-
-<button
-onclick="trade('${k}',1)">
-فروش ۱۰۰
-</button>
-
-<button
-onclick="trade('${k}',-1)">
-خرید ۱۰۰
-</button>
-
-</td>
-
-</tr>
-
-`).join("");
-
+  const el=document.getElementById('view-market');
+  el.innerHTML=`
+  <div class="section-title">📦 بازار تبادل منابع</div>
+  <div class="card">
+    <div class="item-title" style="margin-bottom:8px;">⛏️ فلز ⇄ 💎 کریستال (نرخ ۲ به ۱، کارمزد ۱۰٪)</div>
+    <input type="number" id="mkMetalAmt" placeholder="مقدار فلز برای فروش" style="width:100%;padding:10px;border-radius:8px;background:var(--bg-deep);border:1px solid var(--line);color:var(--text);margin-bottom:8px;">
+    <button class="mini-btn" onclick="trade('metal','crystal',2)">فروش فلز و دریافت کریستال</button>
+  </div>
+  <div class="card">
+    <div class="item-title" style="margin-bottom:8px;">💎 کریستال ⇄ ⚡ انرژی (نرخ ۱ به ۲، کارمزد ۱۰٪)</div>
+    <input type="number" id="mkCrystalAmt" placeholder="مقدار کریستال برای فروش" style="width:100%;padding:10px;border-radius:8px;background:var(--bg-deep);border:1px solid var(--line);color:var(--text);margin-bottom:8px;">
+    <button class="mini-btn" onclick="trade('crystal','energy',0.5)">فروش کریستال و دریافت انرژی</button>
+  </div>
+  <div class="card">
+    <div class="item-title" style="margin-bottom:8px;">⚡ انرژی ⇄ ⛏️ فلز (نرخ ۱ به ۱، کارمزد ۱۰٪)</div>
+    <input type="number" id="mkEnergyAmt" placeholder="مقدار انرژی برای فروش" style="width:100%;padding:10px;border-radius:8px;background:var(--bg-deep);border:1px solid var(--line);color:var(--text);margin-bottom:8px;">
+    <button class="mini-btn" onclick="trade('energy','metal',1)">فروش انرژی و دریافت فلز</button>
+  </div>`;
+}
+function trade(from,to,rate){
+  const idMap={metal:'mkMetalAmt',crystal:'mkCrystalAmt',energy:'mkEnergyAmt'};
+  const amt=parseFloat(document.getElementById(idMap[from]).value);
+  if(!amt || amt<=0 || amt>ACCOUNT.resources[from]){ showToast('مقدار نامعتبر یا منابع ناکافی.'); return; }
+  ACCOUNT.resources[from]-=amt;
+  const gained=amt*rate*0.9;
+  ACCOUNT.resources[to]=Math.min(storageCap(), ACCOUNT.resources[to]+gained);
+  updateHud(); saveAccount(); renderMarket();
+  showToast(`💱 معامله انجام شد: +${gained.toFixed(0)}`);
 }
 
-
-async function trade(k,dir){
-
-const amount=100;
-const price=market[k]*amount;
-
-if(dir>0){
-
-if(G.res[k]<amount)
-return toast("موجودی کافی نیست.");
-
-G.res[k]-=amount;
-G.res.credits+=price;
-
-}else{
-
-if(G.res.credits<price)
-return toast("اعتبار کافی نیست.");
-
-G.res.credits-=price;
-G.res[k]+=amount;
-
+/* ---------- ALIENS / FACTIONS ---------- */
+function renderAliens(){
+  const el=document.getElementById('view-aliens');
+  let html=`<div class="section-title">👽 روابط سیاسی با تمدن‌های بیگانه</div>`;
+  FACTION_LIST.forEach(f=>{
+    const rel=WORLD.factions[f.id].relation;
+    const pct=Math.max(0,Math.min(100,(rel+100)/2));
+    const label = rel>40?'متحد':rel>0?'دوستانه':rel>-40?'خنثی':'خصمانه';
+    const color = rel>40?'var(--ok)':rel>0?'var(--accent)':rel>-40?'var(--gold)':'var(--danger)';
+    html+=`<div class="card">
+      <div class="item-title">${f.icon} ${f.name} <span class="tag-pill" style="color:${color}">${label}</span></div>
+      <div class="rel-bar"><div class="rel-fill" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
+  });
+  html+=`<div class="card"><div class="section-title">📜 گزارش‌های اخیر کهکشان</div>
+  <div style="font-size:12px;color:var(--text-dim);">${(WORLD.log||[]).slice(-6).reverse().map(l=>'• '+l).join('<br>')||'گزارشی ثبت نشده است.'}</div></div>`;
+  el.innerHTML=html;
 }
 
-addLog(
-`${dir>0?"فروش":"خرید"} ۱۰۰ واحد ${k}`
-);
-
-renderAll();
-
-await saveState();
-
+/* ============================================================
+   EVENTS
+============================================================ */
+function showToast(msg){
+  const wrap=document.getElementById('toastWrap');
+  const t=document.createElement('div');
+  t.className='toast-item'; t.textContent=msg;
+  wrap.appendChild(t);
+  setTimeout(()=>t.remove(),4000);
+}
+function showModal({img,svg,title,text,btnText,onClose}){
+  const root=document.getElementById('modalRoot');
+  root.innerHTML=`<div class="modal-overlay"><div class="modal-box">
+    ${img?`<img src="${img}" onerror="this.outerHTML='${svg?svg.replace(/'/g,"\\'"):SVG_UFO_FALLBACK.replace(/'/g,"\\'")}'">`:(svg||'')}
+    <div class="modal-title">${title}</div>
+    <div class="modal-text">${text}</div>
+    <button class="btn-primary" id="modalCloseBtn">${btnText||'متوجه شدم'}</button>
+  </div></div>`;
+  document.getElementById('modalCloseBtn').onclick=()=>{
+    root.innerHTML='';
+    if(onClose) onClose();
+  };
 }
 
+/* --- The signature UFO event, fires 60s after login --- */
+function triggerUfoEvent(){
+  // NOTE: replace UFO_IMAGE_URL below with your real GitHub raw link to ufo.png
+  const UFO_IMAGE_URL = "REPLACE_WITH_YOUR_RAW_GITHUB_URL/ufo.png";
+  showModal({
+    img: UFO_IMAGE_URL,
+    svg: SVG_UFO_FALLBACK,
+    title: '🛸 هشدار اسکنر عمقی',
+    text: 'اسکنرهای ما نشانه‌هایی از حیات غیرانسانی در فاصله‌ای دور از ما شناسایی کرده‌اند! منبع سیگنال در حال حاضر نامشخص است، اما فرماندهی درخواست بررسی فوری دارد.',
+    btnText: 'متوجه شدم',
+    onClose: ()=>{
+      showView('galaxy');
+      const bonus=Math.floor(300+Math.random()*400);
+      ACCOUNT.resources.energy=Math.min(storageCap(), ACCOUNT.resources.energy+bonus);
+      updateHud(); saveAccount();
+      showToast('📡 تیم تحلیل داده‌ها را بررسی کرد و '+bonus+' انرژی اضافه از تجهیزات اسکن باقی‌مانده به دست آوردید.');
+    }
+  });
+}
 
-function renderBattle(){
-
-const enemies=[
-["دزدان فضایی",500,1.1],
-["سندیکای خلأ",1300,1.8],
-["سلطه زتا",3000,2.8],
-["ماشین باستانی",6500,5]
+/* --- Other random hand-crafted events, roughly every 3-6 minutes --- */
+const RANDOM_EVENTS=[
+  {svg:SVG_PIRATE, title:'🏴‍☠️ حملهٔ دزدان فضایی', text:'یک گروه از دزدان فضایی به کاروان‌های نزدیک پایگاه شما حمله کرده‌اند. ناوگان دفاعی شما درگیر شد.', effect:()=>combatRandomOutcome()},
+  {svg:SVG_METEOR, title:'☄️ بارش شهاب‌سنگی', text:'شهاب‌سنگ‌های غنی از فلز نزدیک سیاره شما فرود آمده‌اند.', effect:()=>gainResource('metal',150,400)},
+  {svg:SVG_RELIC, title:'🗿 کشف باستانی', text:'یک کاوشگر محلی یک ابزار باستانی از تمدنی گمشده کشف کرده که می‌تواند به کریستال تبدیل شود.', effect:()=>gainResource('crystal',150,400)},
+  {svg:SVG_CARAVAN, title:'🚚 کاروان تجاری', text:'یک کاروان تجاری بیگانه پیشنهاد دادوستد ویژه‌ای با انرژی اضافه به شما داده است.', effect:()=>gainResource('energy',150,400)},
+  {svg:SVG_DISTRESS, title:'📡 سیگنال درخواست کمک', text:'یک سفینهٔ آسیب‌دیده در حال ارسال سیگنال کمک است. کمک به او می‌تواند پاداش یا خطر به همراه داشته باشد.', effect:()=>gambleEvent()},
 ];
-
-$("#enemies").innerHTML=
-enemies.map((e,i)=>`
-
-<div class="item">
-
-<div>
-
-<b>
-⚠️ ${e[0]}
-</b>
-
-<div class="small">
-قدرت ${e[1]}
-</div>
-
-</div>
-
-<button onclick="attack(${i})">
-حمله
-</button>
-
-</div>
-
-`).join("");
-
-$("#battleLog").innerHTML=
-(G.battleLogs||[])
-.map(x=>`<div>${x}</div>`)
-.join("")
-||"نبردی ثبت نشده است.";
-
+function gainResource(type,min,max){
+  const amt=Math.floor(min+Math.random()*(max-min));
+  ACCOUNT.resources[type]=Math.min(storageCap(), ACCOUNT.resources[type]+amt);
+  updateHud(); saveAccount();
+  showToast(`✅ +${amt} ${type==='metal'?'فلز':type==='crystal'?'کریستال':'انرژی'} دریافت شد.`);
+}
+function combatRandomOutcome(){
+  const my=fleetPower();
+  const enemyPower=50+Math.random()*200;
+  if(my.defense+my.attack*0.3 > enemyPower || Math.random()<0.4){
+    gainResource(['metal','crystal','energy'][Math.floor(Math.random()*3)],100,350);
+  } else {
+    const loss=Math.floor(ACCOUNT.resources.metal*0.05);
+    ACCOUNT.resources.metal=Math.max(0,ACCOUNT.resources.metal-loss);
+    updateHud(); saveAccount();
+    showToast(`⚠️ در حملهٔ دزدان، ${loss} فلز از دست دادید.`);
+  }
+}
+function gambleEvent(){
+  if(Math.random()<0.6){ gainResource(['metal','crystal','energy'][Math.floor(Math.random()*3)],200,500); }
+  else { showToast('😔 سفینه نجات‌یافته چیزی برای جبران نداشت.'); }
+}
+function scheduleRandomEvent(){
+  const delay=(180+Math.random()*180)*1000; // 3 to 6 minutes
+  randomEventTimer=setTimeout(()=>{
+    const ev=RANDOM_EVENTS[Math.floor(Math.random()*RANDOM_EVENTS.length)];
+    showModal({svg:ev.svg, title:ev.title, text:ev.text, btnText:'بررسی رویداد', onClose:ev.effect});
+    scheduleRandomEvent();
+  }, delay);
 }
 
-
-async function attack(i){
-
-const enemies=[
-["دزدان فضایی",500,1.1],
-["سندیکای خلأ",1300,1.8],
-["سلطه زتا",3000,2.8],
-["ماشین باستانی",6500,5]
-];
-
-const e=enemies[i];
-
-const power=fleetPower();
-
-if(power<e[1]*.65)
-return toast("قدرت ناوگان کافی نیست.");
-
-const chance=
-Math.min(
-.97,
-.55+power/(e[1]*3)
-);
-
-if(Math.random()<chance){
-
-const reward=Math.floor(e[1]*e[2]);
-
-G.res.credits+=reward;
-
-G.res.metal+=Math.floor(e[1]*.4);
-
-G.res.crystal+=Math.floor(e[1]*.2);
-
-G.score+=e[1];
-
-G.battleLogs.unshift(
-`پیروزی مقابل ${e[0]} · پاداش ${reward} اعتبار`
-);
-
-}else{
-
-G.battleLogs.unshift(
-`شکست مقابل ${e[0]}`
-);
-
-}
-
-G.battleLogs=G.battleLogs.slice(0,15);
-
-renderAll();
-
-await saveState();
-
-}
-
-
-async function scanGalaxy(){
-
-for(let i=0;i<6;i++){
-
-const id=Math.floor(Math.random()*30);
-
-if(!G.discovered.includes(id))
-G.discovered.push(id);
-
-}
-
-G.score+=15;
-
-addLog(
-`اسکن عمیق انجام شد؛ ${G.discovered.length}/۳۰ سیاره شناسایی شده است.`
-);
-
-renderAll();
-
-await saveState();
-
-toast("اسکن کامل شد.");
-
-}
-
-
-/* =========================
-ONLINE STATE
-========================= */
-
-async function saveState(){
-
-try{
-
-await api("/api/state",{
-method:"PUT",
-body:JSON.stringify({state:G})
-});
-
-}catch(e){
-
-toast("ذخیره آنلاین انجام نشد.");
-
-}
-
-}
-
-
-async function presence(){
-
-try{
-
-await api("/api/presence",{
-method:"POST"
-});
-
-}catch{}
-
-}
-
-
-function startPresence(){
-
-presence();
-
-setInterval(presence,15000);
-
-setInterval(loadPlayers,10000);
-
-}
-
-
-/* =========================
-UFO EVENT
-========================= */
-
-function ufoEvent(){
-
-if(!G)
-return;
-
-modal(`
-
-<div class="modalhead">
-
-<h2>
-👽 رویداد ناشناس
-</h2>
-
-<button onclick="closeModal()">
-✕
-</button>
-
-</div>
-
-<img
-src="ufo.png"
-class="eventImg"
-alt="UFO">
-
-<h3>
-اسکنرهای ما نشانه‌هایی از حیات غیرانسانی در فاصله دوری از ما شناسایی کرده‌اند!
-</h3>
-
-<p class="muted">
-سامانه‌های شناسایی یک سیگنال ناشناخته را در فاصله‌ای بسیار دور ثبت کرده‌اند.
-منبع سیگنال هنوز مشخص نیست.
-</p>
-
-<button
-class="primary"
-onclick="
-closeModal();
-addLog('سیگنال حیات غیرانسانی شناسایی شد.');
-saveState();
-">
-متوجه شدم
-</button>
-
-`);
-
-}
-
-
-/* =========================
-TICK
-========================= */
-
-async function tick(){
-
-if(!G)
-return;
-
-const p=production();
-
-G.res.metal+=p.metal;
-G.res.crystal+=p.crystal;
-G.res.energy+=p.energy;
-
-G.pop+=Math.max(
-1,
-Math.floor(G.pop*.001)
-);
-
-G.turn++;
-
-if(Math.random()<.18){
-
-const keys=["metal","crystal","energy"];
-
-const k=keys[
-Math.floor(Math.random()*keys.length)
-];
-
-market[k]=Math.max(
-2,
-Math.round(
-market[k]*(.9+Math.random()*.25)
-)
-);
-
-}
-
-renderAll();
-
-await saveState();
-
-}
-
-
-/* =========================
-MAP
-========================= */
-
-const canvas=$("#space");
-const ctx=canvas.getContext("2d");
-
-const surface=$("#surface");
-const sctx=surface.getContext("2d");
-
-function resizeCanvas(c){
-
-const r=c.getBoundingClientRect();
-
-const d=devicePixelRatio||1;
-
-c.width=r.width*d;
-c.height=r.height*d;
-
-c.getContext("2d")
-.setTransform(d,0,0,d,0,0);
-
-}
-
-
-function initStars(){
-
-stars=[];
-
-for(let i=0;i<180;i++){
-
-stars.push({
-
-x:Math.random(),
-y:Math.random(),
-r:.2+Math.random()*1.8,
-a:.2+Math.random()*.8
-
-});
-
-}
-
-}
-
-
-function draw(){
-
-if(!canvas.offsetParent||!G)
-return;
-
-const w=canvas.clientWidth;
-const h=canvas.clientHeight;
-
-ctx.clearRect(0,0,w,h);
-
-ctx.fillStyle="#02040b";
-ctx.fillRect(0,0,w,h);
-
-for(const s of stars){
-
-ctx.globalAlpha=s.a;
-ctx.fillStyle="#dbe8ff";
-
-ctx.beginPath();
-ctx.arc(
-s.x*w,
-s.y*h,
-s.r,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-}
-
-ctx.globalAlpha=1;
-
-const hx=w*.5;
-const hy=h*.52;
-
-ctx.strokeStyle="#203655";
-ctx.globalAlpha=.45;
-
-for(let i=0;i<9;i++){
-
-ctx.beginPath();
-
-ctx.moveTo(
-w*.03+i*w*.12,
-h*.1
-);
-
-ctx.lineTo(
-w*.25+i*w*.09,
-h*.9
-);
-
-ctx.stroke();
-
-}
-
-ctx.globalAlpha=1;
-
-ctx.shadowBlur=35;
-ctx.shadowColor="#48e5ff";
-ctx.fillStyle="#48e5ff";
-
-ctx.beginPath();
-ctx.arc(hx,hy,9,0,Math.PI*2);
-ctx.fill();
-
-ctx.shadowBlur=0;
-
-ctx.fillStyle="#fff";
-ctx.font="12px Tahoma";
-
-ctx.fillText(
-G.planetName,
-hx+14,
-hy+4
-);
-
-G.discovered.forEach((id,i)=>{
-
-const angle=i*1.61+.4;
-const radius=80+(i%8)*48;
-
-const x=
-hx+
-Math.cos(angle)*radius;
-
-const y=
-hy+
-Math.sin(angle)*radius*.55;
-
-ctx.fillStyle=
-PLANETS[id]?.color||"#ffd166";
-
-ctx.beginPath();
-
-ctx.arc(
-x,
-y,
-5,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-ctx.fillStyle="#aabbd9";
-
-ctx.fillText(
-PLANETS[id]?.name||"",
-x+8,
-y+4
-);
-
-});
-
-$("#coord").textContent=
-`X:${Math.round(hx)} · Y:${Math.round(hy)}`;
-
-}
-
-
-function drawSurface(){
-
-if(!surface.offsetParent||!G)
-return;
-
-const w=surface.clientWidth;
-const h=surface.clientHeight;
-
-sctx.clearRect(0,0,w,h);
-
-const p=PLANETS[G.planetId];
-
-sctx.fillStyle="#10150f";
-sctx.fillRect(0,0,w,h);
-
-/* terrain */
-
-for(let i=0;i<100;i++){
-
-const x=
-(Math.sin(i*12.9898+G.planetId*97)*.5+.5)*w;
-
-const y=
-(Math.sin(i*78.233+G.planetId*31)*.5+.5)*h;
-
-const r=5+(i%9)*6;
-
-sctx.fillStyle=
-i%3===0?
-"#3b5134":
-"#263523";
-
-sctx.beginPath();
-
-sctx.arc(x,y,r,0,Math.PI*2);
-
-sctx.fill();
-
-}
-
-/* rivers */
-
-sctx.strokeStyle="#35576b";
-sctx.globalAlpha=.6;
-
-for(let i=0;i<5;i++){
-
-sctx.beginPath();
-
-sctx.moveTo(0,i*h/5);
-
-sctx.quadraticCurveTo(
-w*.45,
-((i+1)%4)*h/4,
-w,
-(i+1)*h/5
-);
-
-sctx.stroke();
-
-}
-
-sctx.globalAlpha=1;
-
-/* own base */
-
-const bx=
-G.baseX/100*w;
-
-const by=
-G.baseY/100*h;
-
-sctx.shadowBlur=30;
-sctx.shadowColor="#48e5ff";
-sctx.fillStyle="#48e5ff";
-
-sctx.beginPath();
-
-sctx.arc(
-bx,
-by,
-8,
-0,
-Math.PI*2
-);
-
-sctx.fill();
-
-sctx.shadowBlur=0;
-
-sctx.fillStyle="#fff";
-sctx.font="12px Tahoma";
-
-sctx.fillText(
-"پایگاه شما",
-bx+12,
-by+4
-);
-
-$("#surfaceCoord").textContent=
-`X:${G.baseX} · Y:${G.baseY}`;
-
-}
-
-
-/* =========================
-UTIL
-========================= */
-
-function modal(html){
-
-$("#modalbox").innerHTML=html;
-
-$("#modal").classList.add("show");
-
-}
-
-
-function closeModal(){
-
-$("#modal").classList.remove("show");
-
-}
-
-
-function toast(text){
-
-const d=document.createElement("div");
-
-d.textContent=text;
-
-Object.assign(d.style,{
-position:"fixed",
-left:"18px",
-bottom:"18px",
-zIndex:100,
-padding:"11px 14px",
-background:"#0d1728",
-border:"1px solid #38527e",
-borderRadius:"9px",
-boxShadow:"0 10px 30px #0008"
-});
-
-document.body.appendChild(d);
-
-setTimeout(
-()=>d.remove(),
-2200
-);
-
-}
-
-
-function escapeHTML(s){
-
-return String(s)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
-
-}
-
-
-/* =========================
-NAVIGATION
-========================= */
-
-$$(".nav button[data-view]")
-.forEach(button=>{
-
-button.onclick=()=>{
-
-$$(".nav button[data-view]")
-.forEach(x=>x.classList.remove("active"));
-
-button.classList.add("active");
-
-$$(".view")
-.forEach(v=>v.classList.remove("active"));
-
-$("#"+button.dataset.view)
-.classList.add("active");
-
-draw();
-drawSurface();
-
-};
-
-});
-
-
-$("#modal").onclick=e=>{
-
-if(e.target.id==="modal")
-closeModal();
-
-};
-
-
-window.addEventListener("resize",()=>{
-
-resizeCanvas(canvas);
-resizeCanvas(surface);
-
-draw();
-drawSurface();
-
-});
-
-
-/* =========================
-START
-========================= */
-
-initStars();
-
-resizeCanvas(canvas);
-resizeCanvas(surface);
-
-if(token)
-boot();
-else
-showAuth();
-
-setInterval(tick,5000);
+/* Slow drift of faction relations, occasionally logged (best-effort, shared world) */
+setInterval(async ()=>{
+  if(!WORLD || Math.random()>0.3) return;
+  const f=FACTION_LIST[Math.floor(Math.random()*FACTION_LIST.length)];
+  const delta=Math.floor(Math.random()*20-10);
+  const fresh = await sGet('world_state', true);
+  if(!fresh) return;
+  fresh.factions[f.id].relation=Math.max(-100,Math.min(100, fresh.factions[f.id].relation+delta));
+  fresh.log=fresh.log||[];
+  fresh.log.push(`${f.name} رابطه خود با امپراتوری را ${delta>0?'بهبود':'بدتر'} کرد.`);
+  if(fresh.log.length>40) fresh.log=fresh.log.slice(-40);
+  await sSet('world_state', fresh, true);
+  WORLD=fresh;
+  if(currentView==='aliens') renderAliens();
+}, 90000);
 
 </script>
-
 </body>
 </html>
